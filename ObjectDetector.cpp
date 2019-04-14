@@ -1,16 +1,25 @@
-//
-// Created by joost on 7-4-19.
-//
+/* ============================================================================================== */
+/* ObjectDetector.cpp                                                                             */
+/*                                                                                                */
+/* Joost van Stuijvenberg                                                                         */
+/* April 2019                                                                                     */
+/* ============================================================================================== */
 
 #include "ObjectDetector.hpp"
 
 double MIN_REPEATABILITY = 3.0;
 double MIN_DIST_BETWEEN_BLOBS = 10.0;
 
+/* ---------------------------------------------------------------------------------------------- */
+/* addFilter()                                                                                    */
+/* ---------------------------------------------------------------------------------------------- */
 void ObjectDetector::addFilter(Filter *filter) {
     _filters.emplace_back(filter);
 }
 
+/* ---------------------------------------------------------------------------------------------- */
+/* detect()                                                                                       */
+/* ---------------------------------------------------------------------------------------------- */
 void ObjectDetector::detect(cv::Mat image, std::vector<cv::KeyPoint> &keypoints) {
 
     // An image with actual data must be passed to this function.
@@ -79,13 +88,12 @@ void ObjectDetector::detect(cv::Mat image, std::vector<cv::KeyPoint> &keypoints)
     }
 }
 
-// -------------------------------------------------------------------------------------------------
-// findBlobs() - Uses the findContours()-function to find contours in the binary image.
-// -------------------------------------------------------------------------------------------------
+/* ---------------------------------------------------------------------------------------------- */
+/* findBlobs                                                                                      */
 // PRE  : _binaryImage contains a valid binary image
 // PRE  : centers is a reference to a vector of Center instances
 // POST : centers contains Center objects for each blob that was found
-// -------------------------------------------------------------------------------------------------
+/* ---------------------------------------------------------------------------------------------- */
 void ObjectDetector::findBlobs(cv::Mat image, cv::Mat binaryImage, std::vector<Center> &centers) {
 
     // Find contours in the binary image using the findContours()-function. Let this function

@@ -1,8 +1,9 @@
-/* ---------------------------------------------------------------------------------------------- */
-
-//
-// Created by Joost van Stuijvenberg on 7-4-19.
-//
+/* ============================================================================================== */
+/* ThresholdAlgorithm.hpp                                                                         */
+/*                                                                                                */
+/* Joost van Stuijvenberg                                                                         */
+/* April 2019                                                                                     */
+/* ============================================================================================== */
 
 #ifndef OBJECTDETECTOR_THRESHOLDALGORITHM_HPP
 #define OBJECTDETECTOR_THRESHOLDALGORITHM_HPP

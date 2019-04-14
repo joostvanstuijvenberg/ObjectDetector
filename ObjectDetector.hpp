@@ -1,6 +1,9 @@
-//
-// Created by joost on 7-4-19.
-//
+/* ============================================================================================== */
+/* ObjectDetector.hpp                                                                             */
+/*                                                                                                */
+/* Joost van Stuijvenberg                                                                         */
+/* April 2019                                                                                     */
+/* ============================================================================================== */
 
 #ifndef OBJECTDETECTOR_OBJECTDETECTOR_HPP
 #define OBJECTDETECTOR_OBJECTDETECTOR_HPP
@@ -12,6 +15,9 @@
 #include "Filter.hpp"
 #include "ThresholdAlgorithm.hpp"
 
+/* ---------------------------------------------------------------------------------------------- */
+/* Center data structure                                                                          */
+/* ---------------------------------------------------------------------------------------------- */
 struct Center
 {
     cv::Point2d location;
@@ -19,9 +25,12 @@ struct Center
     double confidence;
 };
 
+/* ---------------------------------------------------------------------------------------------- */
+/* Object detector                                                                                */
+/* ---------------------------------------------------------------------------------------------- */
 class ObjectDetector {
 public:
-    void setThresholdAlgorithm(ThresholdAlgorithm* ta) { _thresholdAlgorithm = ta; }
+    explicit ObjectDetector(ThresholdAlgorithm* thresholdAlgorithm) : _thresholdAlgorithm(thresholdAlgorithm) {}
     void addFilter(Filter* filter);
     void detect(cv::Mat image, std::vector<cv::KeyPoint>& keypoints);
 protected:

@@ -12,15 +12,12 @@ int main() {
     cv::namedWindow("Original");
     cv::imshow("Original", image);
 
-    std::vector<cv::KeyPoint> keypoints;
-    ObjectDetector od;
-
     ThresholdAlgorithm* ta = new ThresholdRangeAlgorithm(40, 120, 10);
-    od.setThresholdAlgorithm(ta);
-
+    ObjectDetector od(ta);
     Filter* f1 = new AreaFilter(100, 5000);
     od.addFilter(f1);
 
+    std::vector<cv::KeyPoint> keypoints;
     od.detect(image, keypoints);
     std::cout << keypoints.size() << " keypoints found." << std::endl;
     cv::Mat results;
