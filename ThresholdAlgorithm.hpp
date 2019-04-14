@@ -1,5 +1,7 @@
+/* ---------------------------------------------------------------------------------------------- */
+
 //
-// Created by joost on 7-4-19.
+// Created by Joost van Stuijvenberg on 7-4-19.
 //
 
 #ifndef OBJECTDETECTOR_THRESHOLDALGORITHM_HPP
@@ -19,7 +21,25 @@ protected:
     cv::Mat _image;
 };
 
-/* Threshold range algorithm */
+/* ---------------------------------------------------------------------------------------------- */
+/* Fixed threshold algorithm                                                                      */
+/* ---------------------------------------------------------------------------------------------- */
+class FixedThresholdAlgorithm: public ThresholdAlgorithm
+{
+public:
+    FixedThresholdAlgorithm(int threshold): _threshold(threshold) {}
+    void binaryImages(std::vector<cv::Mat*> &storage) override {
+        cv::Mat* thr = new cv::Mat;
+        cv::threshold(_image, *thr, _threshold, 255, cv::THRESH_BINARY);
+        storage.emplace_back(thr);
+    }
+private:
+    int _threshold;
+};
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Threshold range algorithm                                                                      */
+/* ---------------------------------------------------------------------------------------------- */
 class ThresholdRangeAlgorithm: public ThresholdAlgorithm
 {
 public:
@@ -36,7 +56,9 @@ private:
     int _min, _max, _step;
 };
 
-/* Otsu's threshold algorithm */
+/* ---------------------------------------------------------------------------------------------- */
+/* Otsu's threshold algorithm                                                                     */
+/* ---------------------------------------------------------------------------------------------- */
 class OtsuThresholdAlgorithm: public ThresholdAlgorithm
 {
 public:
