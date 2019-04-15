@@ -7,9 +7,6 @@
 
 #include "ObjectDetector.hpp"
 
-double MIN_REPEATABILITY = 2.0;
-double MIN_DIST_BETWEEN_BLOBS = 10.0;
-
 /* ---------------------------------------------------------------------------------------------- */
 /* addFilter()                                                                                    */
 /* ---------------------------------------------------------------------------------------------- */
@@ -52,7 +49,7 @@ void ObjectDetector::detect(cv::Mat image, std::vector<cv::KeyPoint> &keypoints)
             bool isNew = true;
             for (auto &center : centers) {
                 double dist = norm(center[center.size() / 2].location - curCenter.location);
-                isNew = dist >= MIN_DIST_BETWEEN_BLOBS && dist >= center[center.size() / 2].radius &&
+                isNew = dist >= _minDistBetweenBlobs && dist >= center[center.size() / 2].radius &&
                         dist >= curCenter.radius;
                 if (!isNew) {
                     center.push_back(curCenter);
@@ -74,7 +71,7 @@ void ObjectDetector::detect(cv::Mat image, std::vector<cv::KeyPoint> &keypoints)
     }
 
     for (auto &center : centers) {
-        if (center.size() < MIN_REPEATABILITY)
+        if (center.size() < _minDistBetweenBlobs)
             continue;
         cv::Point2d sumPoint(0, 0);
         double normalizer = 0;

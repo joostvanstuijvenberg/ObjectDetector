@@ -7,6 +7,9 @@
 #include "ObjectDetector.hpp"
 #include "ThresholdAlgorithm.hpp"
 
+double MIN_REPEATABILITY = 1.0;
+double MIN_DIST_BETWEEN_BLOBS = 10.0;
+
 int main(int argc, char** argv) {
 
     // See if a filename was specified as the first parameter and try to open it.
@@ -28,10 +31,11 @@ int main(int argc, char** argv) {
     cv::imshow("Original", image);
 
     // Use the threshold range algorithm to find objects using different thresholds. Then create an area filter.
-    ThresholdAlgorithm* ta = new ThresholdRangeAlgorithm(40, 120, 10);
+    //ThresholdAlgorithm* ta = new ThresholdRangeAlgorithm(40, 120, 10);
+    ThresholdAlgorithm* ta = new OtsuThresholdAlgorithm();
     Filter* f1 = new AreaFilter(2000, 20000);
     Filter* f2 = new CircularityFilter(0.8, 1.0);
-    ObjectDetector od(ta);
+    ObjectDetector od(ta, MIN_REPEATABILITY, MIN_DIST_BETWEEN_BLOBS);
     od.addFilter(f1);
     od.addFilter(f2);
 
