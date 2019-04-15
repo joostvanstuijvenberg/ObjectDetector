@@ -12,14 +12,14 @@ int main(int argc, char** argv) {
     if (argc != 2)
     {
         std::cout << "Usage: ObjectDetector {filename}" << std::endl;
-        exit();
+        exit(EXIT_FAILURE);
     }
 
     cv::Mat image = cv::imread(argv[1]);
     if (! image.data)
     {
         std::cout << "Could not load file " << argv[1] << std::endl;
-        exit();
+        exit(EXIT_FAILURE);
     }
 
     cv::namedWindow("Original");
