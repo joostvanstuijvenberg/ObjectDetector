@@ -29,16 +29,19 @@ int main(int argc, char** argv) {
 
     // Use the threshold range algorithm to find objects using different thresholds. Then create an area filter.
     ThresholdAlgorithm* ta = new ThresholdRangeAlgorithm(40, 120, 10);
-    Filter* f1 = new AreaFilter(100, 500);
+    Filter* f1 = new AreaFilter(2000, 20000);
+    Filter* f2 = new CircularityFilter(0.8, 1.0);
     ObjectDetector od(ta);
     od.addFilter(f1);
+    od.addFilter(f2);
 
     // Detect objects and return their centers as keypoints. Then show these keypoints in a second image window.
     std::vector<cv::KeyPoint> keypoints;
     od.detect(image, keypoints);
     std::cout << keypoints.size() << " keypoints found." << std::endl;
     cv::Mat results;
-    cv::drawKeypoints(image, keypoints, results, cv::Scalar(0, 0, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+    //cv::drawKeypoints(image, keypoints, results, cv::Scalar(0, 0, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+    cv::drawKeypoints(image, keypoints, results, cv::Scalar(0, 0, 255));
     cv::namedWindow("Results");
     cv::moveWindow("Results", 600, 400);
     cv::imshow("Results", results);

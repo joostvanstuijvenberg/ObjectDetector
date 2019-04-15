@@ -24,7 +24,7 @@ public:
     void addFilter(Filter* filter);
     void detect(cv::Mat image, std::vector<cv::KeyPoint>& keypoints);
 protected:
-    void findBlobs(cv::Mat image, cv::Mat binaryImage, std::vector<Center> &centers);
+    void findBlobs(cv::Mat binaryImage, std::vector<Center> &centers);
 private:
     ThresholdAlgorithm* _thresholdAlgorithm;
     std::vector<Filter*> _filters;

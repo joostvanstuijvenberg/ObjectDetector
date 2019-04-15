@@ -21,36 +21,36 @@ private:
 /* Area filter */
 class AreaFilter : public Filter {
 public:
-    AreaFilter(int min, int max) : _min(min), _max(max) {}
+    AreaFilter(double min, double max) : _min(min), _max(max) {}
 
     bool filter(const cv::Mat &image, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) override {
-        return moments.m00 < _min || moments.m00 > _max;
+        return moments.m00 <= _min || moments.m00 >= _max;
     }
 
 private:
-    int _min, _max;
+    double _min, _max;
 };
 
 /* Circularity filter */
 class CircularityFilter : public Filter {
 public:
-    CircularityFilter(int min, int max) : _min(min), _max(max) {}
+    CircularityFilter(double min, double max) : _min(min), _max(max) {}
 
     bool filter(const cv::Mat &image, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) override {
         double area = moments.m00;
         double perimeter = arcLength(cv::Mat(contour), true);
         double ratio = 4 * CV_PI * area / (perimeter * perimeter);
-        return ratio < _min || ratio > _max;
+        return ratio <= _min || ratio >= _max;
     }
 
 private:
-    int _min, _max;
+    double _min, _max;
 };
 
 /* Convexity filter */
 class ConvexityFilter : public Filter {
 public:
-    ConvexityFilter(int min, int max) : _min(min), _max(max) {}
+    ConvexityFilter(double min, double max) : _min(min), _max(max) {}
 
     bool filter(const cv::Mat &image, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) override {
         // If filtering by convexity is requested, skip this contour if the ratio between the contour
@@ -60,17 +60,17 @@ public:
         double area = contourArea(cv::Mat(contour));
         double hullArea = contourArea(cv::Mat(hull));
         double ratio = area / hullArea;
-        return ratio < _min || ratio > _max;
+        return ratio <= _min || ratio >= _max;
     }
 
 private:
-    int _min, _max;
+    double _min, _max;
 };
 
 /* Inertia filter */
 class InertiaFilter : public Filter {
 public:
-    InertiaFilter(int min, int max) : _min(min), _max(max) {}
+    InertiaFilter(double min, double max) : _min(min), _max(max) {}
 
     bool filter(const cv::Mat &image, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) override {
         double denominator = std::sqrt(std::pow(2 * moments.mu11, 2) + std::pow(moments.mu20 - moments.mu02, 2));
@@ -93,17 +93,17 @@ public:
             ratio = 1;
 
         center.confidence = ratio * ratio;
-        return ratio < _min || ratio > _max;
+        return ratio <= _min || ratio >= _max;
     }
 
 private:
-    int _min, _max;
+    double _min, _max;
 };
 
 /* Color filter */
 class ColorFilter : public Filter {
 public:
-    ColorFilter(uchar color) : _color(color) {}
+    explicit ColorFilter(uchar color) : _color(color) {}
 
     bool filter(const cv::Mat &image, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) override {
         // Prevent division by zero, should this contour have no area.

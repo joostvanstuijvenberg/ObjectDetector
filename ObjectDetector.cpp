@@ -7,7 +7,7 @@
 
 #include "ObjectDetector.hpp"
 
-double MIN_REPEATABILITY = 3.0;
+double MIN_REPEATABILITY = 2.0;
 double MIN_DIST_BETWEEN_BLOBS = 10.0;
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -44,9 +44,9 @@ void ObjectDetector::detect(cv::Mat image, std::vector<cv::KeyPoint> &keypoints)
     _thresholdAlgorithm->binaryImages(binaryImages);
 
     std::vector<std::vector<Center> > centers;
-    for (auto binarizedImage : binaryImages) {
+    for (auto binaryImage : binaryImages) {
         std::vector<Center> curCenters;
-        findBlobs(gray, *binarizedImage, curCenters);
+        findBlobs(*binaryImage, curCenters);
         std::vector<std::vector<Center> > newCenters;
         for (auto &curCenter : curCenters) {
             bool isNew = true;
@@ -94,7 +94,7 @@ void ObjectDetector::detect(cv::Mat image, std::vector<cv::KeyPoint> &keypoints)
 // PRE  : centers is a reference to a vector of Center instances
 // POST : centers contains Center objects for each blob that was found
 /* ---------------------------------------------------------------------------------------------- */
-void ObjectDetector::findBlobs(cv::Mat image, cv::Mat binaryImage, std::vector<Center> &centers) {
+void ObjectDetector::findBlobs(cv::Mat binaryImage, std::vector<Center> &centers) {
 
     // Find contours in the binary image using the findContours()-function. Let this function
     // return a list of contours only (no hierarchical data).
@@ -111,7 +111,7 @@ void ObjectDetector::findBlobs(cv::Mat image, cv::Mat binaryImage, std::vector<C
         bool filtered = false;
         for (Filter* f : _filters)
         {
-            if (f->filter(image, contour, center, moms))
+            if (f->filter(binaryImage, contour, center, moms))
             {
                 filtered = true;
                 break;
@@ -120,6 +120,12 @@ void ObjectDetector::findBlobs(cv::Mat image, cv::Mat binaryImage, std::vector<C
 
         if (filtered)
             continue;
+
+        // Prevent division by zero, should this contour have no area. Otherwise, calculate
+        // the center location.
+        if (moms.m00 == 0.0)
+            continue;
+        center.location = cv::Point2d(moms.m10 / moms.m00, moms.m01 / moms.m00);
 
         // By the time we reach here, the current contour apparently hasn't been filtered out,
         // so we compute the blob radius and store it as a Center in the centers vector.
