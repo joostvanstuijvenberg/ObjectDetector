@@ -48,27 +48,27 @@ void ObjectDetector::detect(cv::Mat image, std::vector<cv::KeyPoint> &keypoints)
         std::vector<Center> curCenters;
         findBlobs(gray, *binarizedImage, curCenters);
         std::vector<std::vector<Center> > newCenters;
-        for (size_t i = 0; i < curCenters.size(); i++) {
+        for (auto &curCenter : curCenters) {
             bool isNew = true;
-            for (size_t j = 0; j < centers.size(); j++) {
-                double dist = norm(centers[j][centers[j].size() / 2].location - curCenters[i].location);
-                isNew = dist >= MIN_DIST_BETWEEN_BLOBS && dist >= centers[j][centers[j].size() / 2].radius &&
-                        dist >= curCenters[i].radius;
+            for (auto &center : centers) {
+                double dist = norm(center[center.size() / 2].location - curCenter.location);
+                isNew = dist >= MIN_DIST_BETWEEN_BLOBS && dist >= center[center.size() / 2].radius &&
+                        dist >= curCenter.radius;
                 if (!isNew) {
-                    centers[j].push_back(curCenters[i]);
+                    center.push_back(curCenter);
 
-                    size_t k = centers[j].size() - 1;
-                    while (k > 0 && centers[j][k].radius < centers[j][k - 1].radius) {
-                        centers[j][k] = centers[j][k - 1];
+                    size_t k = center.size() - 1;
+                    while (k > 0 && center[k].radius < center[k - 1].radius) {
+                        center[k] = center[k - 1];
                         k--;
                     }
-                    centers[j][k] = curCenters[i];
+                    center[k] = curCenter;
 
                     break;
                 }
             }
             if (isNew)
-                newCenters.emplace_back(1, curCenters[i]);
+                newCenters.emplace_back(1, curCenter);
         }
         std::copy(newCenters.begin(), newCenters.end(), std::back_inserter(centers));
     }
@@ -78,9 +78,9 @@ void ObjectDetector::detect(cv::Mat image, std::vector<cv::KeyPoint> &keypoints)
             continue;
         cv::Point2d sumPoint(0, 0);
         double normalizer = 0;
-        for (size_t j = 0; j < center.size(); j++) {
-            sumPoint += center[j].confidence * center[j].location;
-            normalizer += center[j].confidence;
+        for (auto &j : center) {
+            sumPoint += j.confidence * j.location;
+            normalizer += j.confidence;
         }
         sumPoint *= (1. / normalizer);
         cv::KeyPoint kpt(sumPoint, (float) (center[center.size() / 2].radius) * 2.0f);
