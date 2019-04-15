@@ -9,6 +9,7 @@
 
 int main(int argc, char** argv) {
 
+    // See if a filename was specified as the first parameter and try to open it.
     if (argc != 2)
     {
         std::cout << "Usage: ObjectDetector {filename}" << std::endl;
@@ -22,14 +23,17 @@ int main(int argc, char** argv) {
         exit(EXIT_FAILURE);
     }
 
+    // Show the original image.
     cv::namedWindow("Original");
     cv::imshow("Original", image);
 
+    // Use the threshold range algorithm to find objects using different thresholds. Then create an area filter.
     ThresholdAlgorithm* ta = new ThresholdRangeAlgorithm(40, 120, 10);
+    Filter* f1 = new AreaFilter(100, 500);
     ObjectDetector od(ta);
-    Filter* f1 = new AreaFilter(100, 5000);
     od.addFilter(f1);
 
+    // Detect objects and return their centers as keypoints. Then show these keypoints in a second image window.
     std::vector<cv::KeyPoint> keypoints;
     od.detect(image, keypoints);
     std::cout << keypoints.size() << " keypoints found." << std::endl;

@@ -9,9 +9,11 @@
 
 #include "opencv2/opencv.hpp"
 
+#include "Center.hpp"
+
 class Filter {
 public:
-    virtual bool filter(const cv::Mat &image, const std::vector<cv::Point> &contour, const cv::Moments &moments) = 0;
+    virtual bool filter(const cv::Mat &image, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) = 0;
 
 private:
 };
@@ -21,7 +23,7 @@ class AreaFilter : public Filter {
 public:
     AreaFilter(int min, int max) : _min(min), _max(max) {}
 
-    bool filter(const cv::Mat &image, const std::vector<cv::Point> &contour, const cv::Moments &moments) override {
+    bool filter(const cv::Mat &image, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) override {
         return moments.m00 < _min || moments.m00 > _max;
     }
 
@@ -34,7 +36,7 @@ class CircularityFilter : public Filter {
 public:
     CircularityFilter(int min, int max) : _min(min), _max(max) {}
 
-    bool filter(const cv::Mat &image, const std::vector<cv::Point> &contour, const cv::Moments &moments) override {
+    bool filter(const cv::Mat &image, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) override {
         double area = moments.m00;
         double perimeter = arcLength(cv::Mat(contour), true);
         double ratio = 4 * CV_PI * area / (perimeter * perimeter);
@@ -50,7 +52,7 @@ class ConvexityFilter : public Filter {
 public:
     ConvexityFilter(int min, int max) : _min(min), _max(max) {}
 
-    bool filter(const cv::Mat &image, const std::vector<cv::Point> &contour, const cv::Moments &moments) override {
+    bool filter(const cv::Mat &image, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) override {
         // If filtering by convexity is requested, skip this contour if the ratio between the contour
         // area and the hull area is not within the specified limits.
         std::vector<cv::Point> hull;
@@ -70,7 +72,7 @@ class InertiaFilter : public Filter {
 public:
     InertiaFilter(int min, int max) : _min(min), _max(max) {}
 
-    bool filter(const cv::Mat &image, const std::vector<cv::Point> &contour, const cv::Moments &moments) override {
+    bool filter(const cv::Mat &image, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) override {
         double denominator = std::sqrt(std::pow(2 * moments.mu11, 2) + std::pow(moments.mu20 - moments.mu02, 2));
         const double eps = 1e-2;
         double ratio;
@@ -90,8 +92,7 @@ public:
         } else
             ratio = 1;
 
-//TODO:        center.confidence = ratio * ratio;
-
+        center.confidence = ratio * ratio;
         return ratio < _min || ratio > _max;
     }
 
@@ -104,15 +105,13 @@ class ColorFilter : public Filter {
 public:
     ColorFilter(uchar color) : _color(color) {}
 
-    bool filter(const cv::Mat &image, const std::vector<cv::Point> &contour, const cv::Moments &moments) override {
+    bool filter(const cv::Mat &image, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) override {
         // Prevent division by zero, should this contour have no area.
         if (moments.m00 == 0.0)
             return true;
 
-        //TODO: center.location = cv::Point2d(moms.m10 / moms.m00, moms.m01 / moms.m00);
+        center.location = cv::Point2d(moments.m10 / moments.m00, moments.m01 / moments.m00);
         cv::Point2d location = cv::Point2d(moments.m10 / moments.m00, moments.m01 / moments.m00);
-
-        //return !(binaryImage.at<uchar>(cvRound(center.location.y), cvRound(center.location.x)) != _color);
         return !(image.at<uchar>(cvRound(location.y), cvRound(location.x)) != _color);
     }
 
@@ -125,7 +124,7 @@ class BendingEnergyFilter : public Filter {
 public:
     BendingEnergyFilter(int min, int max) : _min(min), _max(max) {}
 
-    bool filter(const cv::Mat &image, const std::vector<cv::Point> &contour, const cv::Moments &moments) override {
+    bool filter(const cv::Mat &image, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) override {
         return moments.m00 < _min || moments.m00 > _max;
     }
 

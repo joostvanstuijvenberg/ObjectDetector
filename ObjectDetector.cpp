@@ -111,7 +111,7 @@ void ObjectDetector::findBlobs(cv::Mat image, cv::Mat binaryImage, std::vector<C
         bool filtered = false;
         for (Filter* f : _filters)
         {
-            if (f->filter(image, contour, moms))
+            if (f->filter(image, contour, center, moms))
             {
                 filtered = true;
                 break;
