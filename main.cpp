@@ -1,3 +1,15 @@
+/* ============================================================================================== */
+/* main.cpp                                                                                       */
+/*                                                                                                */
+/* This file demonstrates the use of ObjectDetector; an enhanced version of OpenCV's Simple-      */
+/* BlobDetector. ObjectDetector allows different thresholding algorithms to be used and various   */
+/* filters to be applied. This can be changed run-time and filtering parameters can be specified  */
+/* programmatically.                                                                              */
+/*                                                                                                */
+/* Joost van Stuijvenberg                                                                         */
+/* April 2019                                                                                     */
+/* ============================================================================================== */
+
 #include <iostream>
 #include <vector>
 #include <memory>
@@ -36,23 +48,22 @@ int main(int argc, char** argv) {
     // Use the threshold range algorithm to find objects using a range of thresholds (min, max, step).
     auto tra = std::make_shared<ThresholdRangeAlgorithm>(40, 120, 10);
 
-    // We'll use an area filter first.
     ObjectDetector od(MIN_REPEATABILITY, MIN_DIST_BETWEEN_BLOBS);
-    od.addFilter(std::make_shared<AreaFilter>(4000, 50000));
 
-    // Detect objects and return their centers as keypoints. Then show these keypoints in a second image window.
-    od.detect(tra, image, keypoints);
+    // We'll use an area filter first.
     std::string Results1 {"Results filter 1: by area"};
+    od.addFilter(std::make_shared<AreaFilter>(4000, 50000));
+    od.detect(tra, image, keypoints);
     cv::Mat results1;
     cv::drawKeypoints(image, keypoints, results1, cv::Scalar(0, 0, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
     cv::namedWindow(Results1);
     cv::moveWindow(Results1, 300, 300);
     cv::imshow(Results1, results1);
 
-    // Now add a second filter.
+    // Now we add a circularity filter.
+    std::string Results2 {"Results filter 2: by circularity"};
     od.addFilter(std::make_shared<CircularityFilter>(0.75, 1.0));
     od.detect(tra, image, keypoints);
-    std::string Results2 {"Results filter 2: by circularity"};
     cv::Mat results2;
     cv::drawKeypoints(image, keypoints, results2, cv::Scalar(0, 0, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
     cv::namedWindow(Results2);
