@@ -8,6 +8,8 @@
 #ifndef OBJECTDETECTOR_CENTER_HPP
 #define OBJECTDETECTOR_CENTER_HPP
 
+#include "opencv2/opencv.hpp"
+
 /* ---------------------------------------------------------------------------------------------- */
 /* Center data structure                                                                          */
 /* ---------------------------------------------------------------------------------------------- */

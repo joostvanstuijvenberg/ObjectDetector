@@ -1,6 +1,9 @@
-//
-// Created by joost on 10-4-19.
-//
+/* ============================================================================================== */
+/* Filter.hpp                                                                                     */
+/*                                                                                                */
+/* Joost van Stuijvenberg                                                                         */
+/* April 2019                                                                                     */
+/* ============================================================================================== */
 
 #ifndef OBJECTDETECTOR_FILTER_H
 #define OBJECTDETECTOR_FILTER_H
@@ -11,14 +14,17 @@
 
 #include "Center.hpp"
 
+/* ---------------------------------------------------------------------------------------------- */
+/* Abstract filter                                                                                */
+/* ---------------------------------------------------------------------------------------------- */
 class Filter {
 public:
     virtual bool filter(const cv::Mat &image, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) = 0;
-
-private:
 };
 
-/* Area filter */
+/* ---------------------------------------------------------------------------------------------- */
+/* Area filter                                                                                    */
+/* ---------------------------------------------------------------------------------------------- */
 class AreaFilter : public Filter {
 public:
     AreaFilter(double min, double max) : _min(min), _max(max) {}
@@ -31,7 +37,9 @@ private:
     double _min, _max;
 };
 
-/* Circularity filter */
+/* ---------------------------------------------------------------------------------------------- */
+/* Circularity filter                                                                             */
+/* ---------------------------------------------------------------------------------------------- */
 class CircularityFilter : public Filter {
 public:
     CircularityFilter(double min, double max) : _min(min), _max(max) {}
@@ -47,7 +55,9 @@ private:
     double _min, _max;
 };
 
-/* Convexity filter */
+/* ---------------------------------------------------------------------------------------------- */
+/* Convexity filter                                                                               */
+/* ---------------------------------------------------------------------------------------------- */
 class ConvexityFilter : public Filter {
 public:
     ConvexityFilter(double min, double max) : _min(min), _max(max) {}
@@ -67,7 +77,9 @@ private:
     double _min, _max;
 };
 
-/* Inertia filter */
+/* ---------------------------------------------------------------------------------------------- */
+/* Inertia filter                                                                                 */
+/* ---------------------------------------------------------------------------------------------- */
 class InertiaFilter : public Filter {
 public:
     InertiaFilter(double min, double max) : _min(min), _max(max) {}
@@ -100,7 +112,9 @@ private:
     double _min, _max;
 };
 
-/* Color filter */
+/* ---------------------------------------------------------------------------------------------- */
+/* Color filter                                                                                   */
+/* ---------------------------------------------------------------------------------------------- */
 class ColorFilter : public Filter {
 public:
     explicit ColorFilter(uchar color) : _color(color) {}
@@ -119,7 +133,9 @@ private:
     uchar _color;
 };
 
-/* Bending energy filter */
+/* ---------------------------------------------------------------------------------------------- */
+/* Bending energy filter                                                                          */
+/* ---------------------------------------------------------------------------------------------- */
 class BendingEnergyFilter : public Filter {
 public:
     BendingEnergyFilter(int min, int max) : _min(min), _max(max) {}

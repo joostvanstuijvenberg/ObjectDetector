@@ -7,12 +7,12 @@
 #include "ObjectDetector.hpp"
 #include "ThresholdAlgorithm.hpp"
 
-double MIN_REPEATABILITY = 1.0;
+int MIN_REPEATABILITY = 3;
 double MIN_DIST_BETWEEN_BLOBS = 10.0;
 
 int main(int argc, char** argv) {
 
-    // See if a filename was specified as the first parameter and try to open it.
+    // See if a filename was specified as the first parameter and try to open and show it.
     if (argc != 2)
     {
         std::cout << "Usage: ObjectDetector {filename}" << std::endl;
@@ -26,18 +26,18 @@ int main(int argc, char** argv) {
         exit(EXIT_FAILURE);
     }
 
-    // Show the original image.
     cv::namedWindow("Original");
     cv::imshow("Original", image);
 
-    // Use the threshold range algorithm to find objects using different thresholds. Then create an area filter.
-    //ThresholdAlgorithm* ta = new ThresholdRangeAlgorithm(40, 120, 10);
-    ThresholdAlgorithm* ta = new OtsuThresholdAlgorithm();
-    Filter* f1 = new AreaFilter(2000, 20000);
-    Filter* f2 = new CircularityFilter(0.8, 1.0);
+    // Use the threshold range algorithm to find objects using different thresholds.
+    ThresholdAlgorithm* ta = new ThresholdRangeAlgorithm(40, 120, 10);
+    // We'll use an area filter.
+    Filter* f1 = new AreaFilter(200, 200000);
+    //Filter* f2 = new CircularityFilter(0.8, 1.0);
     ObjectDetector od(ta, MIN_REPEATABILITY, MIN_DIST_BETWEEN_BLOBS);
+    //ObjectDetector od(ta, 1.0, MIN_DIST_BETWEEN_BLOBS);
     od.addFilter(f1);
-    od.addFilter(f2);
+    //od.addFilter(f2);
 
     // Detect objects and return their centers as keypoints. Then show these keypoints in a second image window.
     std::vector<cv::KeyPoint> keypoints;

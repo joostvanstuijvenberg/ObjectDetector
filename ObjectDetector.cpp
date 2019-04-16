@@ -25,25 +25,24 @@ void ObjectDetector::detect(cv::Mat image, std::vector<cv::KeyPoint> &keypoints)
     // A threshold algorithm must be set *before* calling detect().
     assert(_thresholdAlgorithm != nullptr);
 
-    keypoints.clear();
-
+    // ObjectDetector only supports 8-bit image depth.
     cv::Mat gray;
     if (image.channels() == 3 || image.channels() == 4)
         cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
     else
         gray = image;
-
-    // ObjectDetector only supports 8-bit image depth.
     assert(gray.type() == CV_8UC1);
 
     std::vector<cv::Mat *> binaryImages;
     _thresholdAlgorithm->setImage(gray);
-    _thresholdAlgorithm->binaryImages(binaryImages);
+    _thresholdAlgorithm->getBinaryImages(binaryImages);
 
     std::vector<std::vector<Center> > centers;
     for (auto binaryImage : binaryImages) {
         std::vector<Center> curCenters;
         findBlobs(*binaryImage, curCenters);
+
+        //
         std::vector<std::vector<Center> > newCenters;
         for (auto &curCenter : curCenters) {
             bool isNew = true;
@@ -53,14 +52,12 @@ void ObjectDetector::detect(cv::Mat image, std::vector<cv::KeyPoint> &keypoints)
                         dist >= curCenter.radius;
                 if (!isNew) {
                     center.push_back(curCenter);
-
                     size_t k = center.size() - 1;
                     while (k > 0 && center[k].radius < center[k - 1].radius) {
                         center[k] = center[k - 1];
                         k--;
                     }
                     center[k] = curCenter;
-
                     break;
                 }
             }
@@ -70,6 +67,8 @@ void ObjectDetector::detect(cv::Mat image, std::vector<cv::KeyPoint> &keypoints)
         std::copy(newCenters.begin(), newCenters.end(), std::back_inserter(centers));
     }
 
+    //
+    keypoints.clear();
     for (auto &center : centers) {
         if (center.size() < _minDistBetweenBlobs)
             continue;
@@ -86,10 +85,7 @@ void ObjectDetector::detect(cv::Mat image, std::vector<cv::KeyPoint> &keypoints)
 }
 
 /* ---------------------------------------------------------------------------------------------- */
-/* findBlobs                                                                                      */
-// PRE  : _binaryImage contains a valid binary image
-// PRE  : centers is a reference to a vector of Center instances
-// POST : centers contains Center objects for each blob that was found
+/* findBlobs()                                                                                    */
 /* ---------------------------------------------------------------------------------------------- */
 void ObjectDetector::findBlobs(cv::Mat binaryImage, std::vector<Center> &centers) {
 
@@ -105,6 +101,12 @@ void ObjectDetector::findBlobs(cv::Mat binaryImage, std::vector<Center> &centers
         center.confidence = 1;
         cv::Moments moms = moments(cv::Mat(contour));
 
+        // Prevent division by zero, should this contour have no area. Otherwise, calculate
+        // the center location.
+        if (moms.m00 == 0.0)
+            continue;
+
+        // Process all filters until the first one that filters out the contour.
         bool filtered = false;
         for (Filter* f : _filters)
         {
@@ -118,14 +120,9 @@ void ObjectDetector::findBlobs(cv::Mat binaryImage, std::vector<Center> &centers
         if (filtered)
             continue;
 
-        // Prevent division by zero, should this contour have no area. Otherwise, calculate
-        // the center location.
-        if (moms.m00 == 0.0)
-            continue;
-        center.location = cv::Point2d(moms.m10 / moms.m00, moms.m01 / moms.m00);
-
         // By the time we reach here, the current contour apparently hasn't been filtered out,
         // so we compute the blob radius and store it as a Center in the centers vector.
+        center.location = cv::Point2d(moms.m10 / moms.m00, moms.m01 / moms.m00);
         std::vector<double> dists;
         for (auto &pointIdx : contour) {
             cv::Point2d pt = pointIdx;
