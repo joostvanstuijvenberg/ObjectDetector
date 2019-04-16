@@ -22,6 +22,27 @@
 int MIN_REPEATABILITY = 3;
 double MIN_DIST_BETWEEN_BLOBS = 10.0;
 
+/* ---------------------------------------------------------------------------------------------- */
+/* showResults() - utility function to show the results of object detection                       */
+/* ---------------------------------------------------------------------------------------------- */
+void showResults(const std::string &title, const cv::Mat& image, const std::vector<cv::KeyPoint>& keypoints)
+{
+    static int x = 200;
+    static int y = 200;
+
+    cv::Mat result;
+    cv::drawKeypoints(image, keypoints, result, cv::Scalar(0, 0, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+    cv::namedWindow(title);
+    cv::moveWindow(title, x, y);
+    cv::imshow(title, result);
+
+    x += 100;
+    y += 100;
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* main()                                                                                         */
+/* ---------------------------------------------------------------------------------------------- */
 int main(int argc, char** argv) {
 
     // See if a filename was specified as the first parameter and try to open and show it.
@@ -46,43 +67,35 @@ int main(int argc, char** argv) {
     cv::imshow(Original, image);
 
     // Use the threshold range algorithm to find objects using a range of thresholds (min, max, step)
-    // and the repeatability.
+    // and with a minimum repeatability.
     auto tra = std::make_shared<ThresholdRangeAlgorithm>(40, 150, 10, 3);
+    // Use Otsu's threshold algorithm.
+    auto ota = std::make_shared<OtsuThresholdAlgorithm>();
 
     ObjectDetector od(MIN_DIST_BETWEEN_BLOBS);
 
     // We'll use an area filter first.
-    std::string Results1 {"Results filter 1: by area"};
     od.addFilter(std::make_shared<AreaFilter>(4000, 50000));
     od.detect(tra, image, keypoints);
-    cv::Mat results1;
-    cv::drawKeypoints(image, keypoints, results1, cv::Scalar(0, 0, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-    cv::namedWindow(Results1);
-    cv::moveWindow(Results1, 200, 200);
-    cv::imshow(Results1, results1);
+    showResults("Filtering by area, using a threshold range", image, keypoints);
 
     // Now we add a circularity filter.
-    std::string Results2 {"Results filter 2: by area and circularity"};
     od.addFilter(std::make_shared<CircularityFilter>(0.75, 1.0));
     od.detect(tra, image, keypoints);
-    cv::Mat results2;
-    cv::drawKeypoints(image, keypoints, results2, cv::Scalar(0, 0, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-    cv::namedWindow(Results2);
-    cv::moveWindow(Results2, 300, 300);
-    cv::imshow(Results2, results2);
+    showResults("Filtering by area and circularity, using a threshold range", image, keypoints);
 
-    // Filtering by inertia for circles
-    std::string Results3 {"Results filter 3: by area and inertia"};
+    // Filtering by both area and inertia.
     od.resetFilters();
     od.addFilter(std::make_shared<AreaFilter>(4000, 15000));
     od.addFilter(std::make_shared<InertiaFilter>(0.05, 0.75));
     od.detect(tra, image, keypoints);
-    cv::Mat results3;
-    cv::drawKeypoints(image, keypoints, results3, cv::Scalar(0, 0, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-    cv::namedWindow(Results3);
-    cv::moveWindow(Results3, 400, 400);
-    cv::imshow(Results3, results3);
+    showResults("Filtering by area and inertia, using a threshold range", image, keypoints);
 
-    cv::waitKey(0);
+    // Now just select Otsu's threshold algorithm.
+    od.detect(ota, image, keypoints);
+    showResults("Filtering by area and inertia, using Otsu's threshold algorithm", image, keypoints);
+
+    // Press <Esc> to quit this demo.
+    while(cv::waitKey(40) != 27);
     return 0;
 }
