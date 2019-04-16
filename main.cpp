@@ -45,10 +45,11 @@ int main(int argc, char** argv) {
     cv::moveWindow(Original, 100, 100);
     cv::imshow(Original, image);
 
-    // Use the threshold range algorithm to find objects using a range of thresholds (min, max, step).
-    auto tra = std::make_shared<ThresholdRangeAlgorithm>(40, 120, 10);
+    // Use the threshold range algorithm to find objects using a range of thresholds (min, max, step) and the
+    // repeatability.
+    auto tra = std::make_shared<ThresholdRangeAlgorithm>(40, 120, 10, 3);
 
-    ObjectDetector od(MIN_REPEATABILITY, MIN_DIST_BETWEEN_BLOBS);
+    ObjectDetector od(MIN_DIST_BETWEEN_BLOBS);
 
     // We'll use an area filter first.
     std::string Results1 {"Results filter 1: by area"};

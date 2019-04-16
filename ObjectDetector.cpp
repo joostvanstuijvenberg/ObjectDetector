@@ -22,7 +22,8 @@ void ObjectDetector::addFilter(std::shared_ptr<Filter> filter) {
 // A threshold algorithm must be set *before* calling detect().
 // ObjectDetector only supports 8-bit image depth.
 /* ---------------------------------------------------------------------------------------------- */
-void ObjectDetector::detect(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorithm, cv::Mat& image, std::vector<cv::KeyPoint> &keypoints) {
+void ObjectDetector::detect(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorithm, cv::Mat& image, std::vector<cv::KeyPoint> &keypoints)
+{
     assert(image.data != 0);
     assert(thresholdAlgorithm != nullptr);
 
@@ -35,7 +36,7 @@ void ObjectDetector::detect(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorit
 
     std::vector<cv::Mat *> binaryImages;
     thresholdAlgorithm->setImage(gray);
-    thresholdAlgorithm->getBinaryImages(binaryImages);
+    thresholdAlgorithm->binaryImages(binaryImages);
 
     std::vector<std::vector<Center>> centers;
     for (auto binaryImage : binaryImages) {
@@ -67,13 +68,10 @@ void ObjectDetector::detect(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorit
         std::copy(newCenters.begin(), newCenters.end(), std::back_inserter(centers));
     }
 
-    //TODO: remove this and make it dependant of the threshold algorithm?
-    int minRept = std::min(_minRepeatability, static_cast<int>(binaryImages.size()));
-
     // Skip centers that do not occur enough times.
     keypoints.clear();
     for (auto &center : centers) {
-        if (center.size() < minRept)
+        if (center.size() < thresholdAlgorithm->minRepeatability())
             continue;
         cv::Point2d sumPoint(0, 0);
         double normalizer = 0;
@@ -90,8 +88,8 @@ void ObjectDetector::detect(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorit
 /* ---------------------------------------------------------------------------------------------- */
 /* findBlobs()                                                                                    */
 /* ---------------------------------------------------------------------------------------------- */
-void ObjectDetector::findBlobs(cv::Mat& binaryImage, std::vector<Center>& centers) {
-
+void ObjectDetector::findBlobs(cv::Mat& binaryImage, std::vector<Center>& centers)
+{
     // Find contours in the binary image using the findContours()-function. Let this function
     // return a list of contours only (no hierarchical data).
     centers.clear();

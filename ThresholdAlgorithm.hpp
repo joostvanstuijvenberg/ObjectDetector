@@ -20,10 +20,13 @@
 class ThresholdAlgorithm
 {
 public:
+    explicit ThresholdAlgorithm(int minRepeatability = 1) : _minRepeatability(minRepeatability) {}
     void setImage(cv::Mat& image) { _image = image; }
-    virtual void getBinaryImages(std::vector<cv::Mat *> &storage) = 0;
+    virtual void binaryImages(std::vector<cv::Mat *> &storage) = 0;
+    int minRepeatability() { return _minRepeatability; }
 protected:
     cv::Mat _image;
+    int _minRepeatability;
     void debug(std::vector<cv::Mat*>& storage)
     {
         int w = 0;
@@ -48,8 +51,9 @@ protected:
 class FixedThresholdAlgorithm: public ThresholdAlgorithm
 {
 public:
-    explicit FixedThresholdAlgorithm(int threshold): _threshold(threshold) {}
-    void getBinaryImages(std::vector<cv::Mat *> &storage) override {
+    explicit FixedThresholdAlgorithm(int threshold)
+    : ThresholdAlgorithm(), _threshold(threshold) {}
+    void binaryImages(std::vector<cv::Mat *> &storage) override {
         auto* thr = new cv::Mat;
         cv::threshold(_image, *thr, _threshold, 255, cv::THRESH_BINARY);
         storage.emplace_back(thr);
@@ -65,9 +69,9 @@ private:
 class ThresholdRangeAlgorithm: public ThresholdAlgorithm
 {
 public:
-    ThresholdRangeAlgorithm(int min, int max, int step)
-    : _min(min), _max(max), _step(step) {}
-    void getBinaryImages(std::vector<cv::Mat *> &storage) override {
+    ThresholdRangeAlgorithm(int min, int max, int step, int minRepeatability)
+    : ThresholdAlgorithm(minRepeatability),_min(min), _max(max), _step(step) {}
+    void binaryImages(std::vector<cv::Mat *> &storage) override {
         for (auto i = _min; i <= _max; i += _step) {
             auto* thr = new cv::Mat;
             cv::threshold(_image, *thr, i, 255, cv::THRESH_BINARY);
@@ -85,7 +89,9 @@ private:
 class OtsuThresholdAlgorithm: public ThresholdAlgorithm
 {
 public:
-    void getBinaryImages(std::vector<cv::Mat *> &storage) override {
+    OtsuThresholdAlgorithm()
+    : ThresholdAlgorithm() {}
+    void binaryImages(std::vector<cv::Mat *> &storage) override {
         auto* thr = new cv::Mat;
         cv::threshold(_image, *thr, 0, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
         storage.emplace_back(thr);
