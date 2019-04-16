@@ -96,6 +96,13 @@ int main(int argc, char** argv) {
     od.detect(ota, image, keypoints);
     showWindow("Filtering by area and inertia, using Otsu's threshold algorithm", image, &keypoints);
 
+    // Now we will show all objects that have a medium gray to white 'color'.
+    od.resetFilters();
+    od.addFilter(std::make_shared<AreaFilter>(1000, 50000));
+    od.addFilter(std::make_shared<ColorFilter>(100, 255));
+    od.detect(tra, image, keypoints);
+    showWindow("Filtering by area and gray value, using a threshold range", image, &keypoints);
+
     // Press <Esc> to quit this demo.
     while(cv::waitKey(40) != 27);
     return 0;

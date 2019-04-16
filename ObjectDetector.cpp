@@ -18,9 +18,6 @@ void ObjectDetector::addFilter(std::shared_ptr<Filter> filter) {
 
 /* ---------------------------------------------------------------------------------------------- */
 /* detect()                                                                                       */
-// An image with actual data must be passed to this function.
-// A threshold algorithm must be set *before* calling detect().
-// ObjectDetector only supports 8-bit image depth.
 /* ---------------------------------------------------------------------------------------------- */
 void ObjectDetector::detect(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorithm, cv::Mat& image, std::vector<cv::KeyPoint> &keypoints)
 {
@@ -41,7 +38,7 @@ void ObjectDetector::detect(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorit
     std::vector<std::vector<Center>> centers;
     for (auto binaryImage : binaryImages) {
         std::vector<Center> curCenters;
-        findBlobs(*binaryImage, curCenters);
+        findBlobs(gray, *binaryImage, curCenters);
 
         //
         std::vector<std::vector<Center> > newCenters;
@@ -88,7 +85,7 @@ void ObjectDetector::detect(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorit
 /* ---------------------------------------------------------------------------------------------- */
 /* findBlobs()                                                                                    */
 /* ---------------------------------------------------------------------------------------------- */
-void ObjectDetector::findBlobs(cv::Mat& binaryImage, std::vector<Center>& centers)
+void ObjectDetector::findBlobs(cv::Mat& originalImage, cv::Mat& binaryImage, std::vector<Center>& centers)
 {
     // Find contours in the binary image using the findContours()-function. Let this function
     // return a list of contours only (no hierarchical data).
@@ -112,7 +109,7 @@ void ObjectDetector::findBlobs(cv::Mat& binaryImage, std::vector<Center>& center
         bool filtered = false;
         for (auto f : _filters)
         {
-            if (f->filter(binaryImage, contour, center, m))
+            if (f->filter(originalImage, binaryImage, contour, center, m))
             {
                 filtered = true;
                 break;
