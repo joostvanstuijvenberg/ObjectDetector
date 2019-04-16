@@ -68,7 +68,7 @@ void ObjectDetector::detect(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorit
         std::copy(newCenters.begin(), newCenters.end(), std::back_inserter(centers));
     }
 
-    // Skip centers that do not occur enough times.
+    // Skip centers with less than the specified minimum number of occurrences.
     keypoints.clear();
     for (auto &center : centers) {
         if (center.size() < thresholdAlgorithm->minRepeatability())
