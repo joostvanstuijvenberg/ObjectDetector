@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
     // Use the threshold range algorithm to find objects using different thresholds.
     ThresholdAlgorithm* ta = new ThresholdRangeAlgorithm(40, 120, 10);
     // We'll use an area filter.
-    Filter* f1 = new AreaFilter(200, 200000);
+    Filter* f1 = new AreaFilter(8000, 80000);
     //Filter* f2 = new CircularityFilter(0.8, 1.0);
     ObjectDetector od(ta, MIN_REPEATABILITY, MIN_DIST_BETWEEN_BLOBS);
     //ObjectDetector od(ta, 1.0, MIN_DIST_BETWEEN_BLOBS);

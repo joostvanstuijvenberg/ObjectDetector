@@ -16,16 +16,14 @@ void ObjectDetector::addFilter(Filter *filter) {
 
 /* ---------------------------------------------------------------------------------------------- */
 /* detect()                                                                                       */
+// An image with actual data must be passed to this function.
+// A threshold algorithm must be set *before* calling detect().
+// ObjectDetector only supports 8-bit image depth.
 /* ---------------------------------------------------------------------------------------------- */
-void ObjectDetector::detect(cv::Mat image, std::vector<cv::KeyPoint> &keypoints) {
-
-    // An image with actual data must be passed to this function.
+void ObjectDetector::detect(cv::Mat& image, std::vector<cv::KeyPoint> &keypoints) {
     assert(image.data != 0);
+    assert(_algorithm != nullptr);
 
-    // A threshold algorithm must be set *before* calling detect().
-    assert(_thresholdAlgorithm != nullptr);
-
-    // ObjectDetector only supports 8-bit image depth.
     cv::Mat gray;
     if (image.channels() == 3 || image.channels() == 4)
         cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
@@ -34,10 +32,10 @@ void ObjectDetector::detect(cv::Mat image, std::vector<cv::KeyPoint> &keypoints)
     assert(gray.type() == CV_8UC1);
 
     std::vector<cv::Mat *> binaryImages;
-    _thresholdAlgorithm->setImage(gray);
-    _thresholdAlgorithm->getBinaryImages(binaryImages);
+    _algorithm->setImage(gray);
+    _algorithm->getBinaryImages(binaryImages);
 
-    std::vector<std::vector<Center> > centers;
+    std::vector<std::vector<Center>> centers;
     for (auto binaryImage : binaryImages) {
         std::vector<Center> curCenters;
         findBlobs(*binaryImage, curCenters);
@@ -70,7 +68,7 @@ void ObjectDetector::detect(cv::Mat image, std::vector<cv::KeyPoint> &keypoints)
     //
     keypoints.clear();
     for (auto &center : centers) {
-        if (center.size() < _minDistBetweenBlobs)
+        if (center.size() < _minRepeatability)
             continue;
         cv::Point2d sumPoint(0, 0);
         double normalizer = 0;
@@ -87,44 +85,46 @@ void ObjectDetector::detect(cv::Mat image, std::vector<cv::KeyPoint> &keypoints)
 /* ---------------------------------------------------------------------------------------------- */
 /* findBlobs()                                                                                    */
 /* ---------------------------------------------------------------------------------------------- */
-void ObjectDetector::findBlobs(cv::Mat binaryImage, std::vector<Center> &centers) {
+void ObjectDetector::findBlobs(cv::Mat& binaryImage, std::vector<Center>& centers) {
 
     // Find contours in the binary image using the findContours()-function. Let this function
     // return a list of contours only (no hierarchical data).
     centers.clear();
     std::vector <std::vector<cv::Point>> contours;
+    // RETR_LIST: retrieves all of the contours without establishing any hierarchical relationships.
+    // CHAIN_APPROX_NONE stores absolutely all the contour points.
     findContours(binaryImage, contours, cv::RETR_LIST, cv::CHAIN_APPROX_NONE);
 
     // Now process all the contours that were found.
     for (auto &contour : contours) {
         Center center;
         center.confidence = 1;
-        cv::Moments moms = moments(cv::Mat(contour));
+        cv::Moments m = moments(cv::Mat(contour), true); // 2nd parameter specifies image is binary.
 
-        // Prevent division by zero, should this contour have no area. Otherwise, calculate
-        // the center location.
-        if (moms.m00 == 0.0)
+        // SKip contours that have no area.
+        if (m.m00 == 0.0)
             continue;
 
         // Process all filters until the first one that filters out the contour.
         bool filtered = false;
         for (Filter* f : _filters)
         {
-            if (f->filter(binaryImage, contour, center, moms))
+            if (f->filter(binaryImage, contour, center, m))
             {
                 filtered = true;
                 break;
             }
         }
 
+        // If it was filtered out, skip the contour.
         if (filtered)
             continue;
 
         // By the time we reach here, the current contour apparently hasn't been filtered out,
-        // so we compute the blob radius and store it as a Center in the centers vector.
-        center.location = cv::Point2d(moms.m10 / moms.m00, moms.m01 / moms.m00);
+        // so compute the location and blob radius and store it as a Center in the centers vector.
+        center.location = cv::Point2d(m.m10 / m.m00, m.m01 / m.m00);
         std::vector<double> dists;
-        for (auto &pointIdx : contour) {
+        for (const auto &pointIdx : contour) {
             cv::Point2d pt = pointIdx;
             dists.push_back(norm(center.location - pt));
         }

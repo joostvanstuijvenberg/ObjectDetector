@@ -20,7 +20,7 @@
 class ThresholdAlgorithm
 {
 public:
-    void setImage(cv::Mat image) { _image = image; }
+    void setImage(cv::Mat& image) { _image = image; }
     virtual void getBinaryImages(std::vector<cv::Mat *> &storage) = 0;
 protected:
     cv::Mat _image;
