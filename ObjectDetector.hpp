@@ -20,9 +20,10 @@
 /* ---------------------------------------------------------------------------------------------- */
 class ObjectDetector {
 public:
-    ObjectDetector(double minDistBetweenBlobs)
+    explicit ObjectDetector(double minDistBetweenBlobs)
     : _minDistBetweenBlobs(minDistBetweenBlobs) {}
     void addFilter(std::shared_ptr<Filter> filter);
+    void resetFilters() { _filters.clear(); }
     void detect(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorithm, cv::Mat& image, std::vector<cv::KeyPoint>& keypoints);
 protected:
     void findBlobs(cv::Mat& binaryImage, std::vector<Center> &centers);

@@ -45,9 +45,9 @@ int main(int argc, char** argv) {
     cv::moveWindow(Original, 100, 100);
     cv::imshow(Original, image);
 
-    // Use the threshold range algorithm to find objects using a range of thresholds (min, max, step) and the
-    // repeatability.
-    auto tra = std::make_shared<ThresholdRangeAlgorithm>(40, 120, 10, 3);
+    // Use the threshold range algorithm to find objects using a range of thresholds (min, max, step)
+    // and the repeatability.
+    auto tra = std::make_shared<ThresholdRangeAlgorithm>(40, 150, 10, 3);
 
     ObjectDetector od(MIN_DIST_BETWEEN_BLOBS);
 
@@ -58,18 +58,30 @@ int main(int argc, char** argv) {
     cv::Mat results1;
     cv::drawKeypoints(image, keypoints, results1, cv::Scalar(0, 0, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
     cv::namedWindow(Results1);
-    cv::moveWindow(Results1, 300, 300);
+    cv::moveWindow(Results1, 200, 200);
     cv::imshow(Results1, results1);
 
     // Now we add a circularity filter.
-    std::string Results2 {"Results filter 2: by circularity"};
+    std::string Results2 {"Results filter 2: by area and circularity"};
     od.addFilter(std::make_shared<CircularityFilter>(0.75, 1.0));
     od.detect(tra, image, keypoints);
     cv::Mat results2;
     cv::drawKeypoints(image, keypoints, results2, cv::Scalar(0, 0, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
     cv::namedWindow(Results2);
-    cv::moveWindow(Results2, 500, 500);
+    cv::moveWindow(Results2, 300, 300);
     cv::imshow(Results2, results2);
+
+    // Filtering by inertia for circles
+    std::string Results3 {"Results filter 3: by area and inertia"};
+    od.resetFilters();
+    od.addFilter(std::make_shared<AreaFilter>(4000, 15000));
+    od.addFilter(std::make_shared<InertiaFilter>(0.05, 0.75));
+    od.detect(tra, image, keypoints);
+    cv::Mat results3;
+    cv::drawKeypoints(image, keypoints, results3, cv::Scalar(0, 0, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+    cv::namedWindow(Results3);
+    cv::moveWindow(Results3, 400, 400);
+    cv::imshow(Results3, results3);
 
     cv::waitKey(0);
     return 0;
