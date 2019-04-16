@@ -20,14 +20,13 @@
 /* ---------------------------------------------------------------------------------------------- */
 class ObjectDetector {
 public:
-    explicit ObjectDetector(ThresholdAlgorithm* thresholdAlgorithm, int minRepeatability, double minDistBetweenBlobs)
-    : _algorithm(thresholdAlgorithm), _minRepeatability(minRepeatability), _minDistBetweenBlobs(minDistBetweenBlobs) {}
+    ObjectDetector(int minRepeatability, double minDistBetweenBlobs)
+    : _minRepeatability(minRepeatability), _minDistBetweenBlobs(minDistBetweenBlobs) {}
     void addFilter(Filter* filter);
-    void detect(cv::Mat& image, std::vector<cv::KeyPoint>& keypoints);
+    void detect(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorithm, cv::Mat& image, std::vector<cv::KeyPoint>& keypoints);
 protected:
     void findBlobs(cv::Mat& binaryImage, std::vector<Center> &centers);
 private:
-    ThresholdAlgorithm* _algorithm;
     int _minRepeatability;
     double _minDistBetweenBlobs;
     std::vector<Filter*> _filters;

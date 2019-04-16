@@ -5,6 +5,8 @@
 /* April 2019                                                                                     */
 /* ============================================================================================== */
 
+#include <algorithm>
+
 #include "ObjectDetector.hpp"
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -20,9 +22,9 @@ void ObjectDetector::addFilter(Filter *filter) {
 // A threshold algorithm must be set *before* calling detect().
 // ObjectDetector only supports 8-bit image depth.
 /* ---------------------------------------------------------------------------------------------- */
-void ObjectDetector::detect(cv::Mat& image, std::vector<cv::KeyPoint> &keypoints) {
+void ObjectDetector::detect(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorithm, cv::Mat& image, std::vector<cv::KeyPoint> &keypoints) {
     assert(image.data != 0);
-    assert(_algorithm != nullptr);
+    assert(thresholdAlgorithm != nullptr);
 
     cv::Mat gray;
     if (image.channels() == 3 || image.channels() == 4)
@@ -32,8 +34,8 @@ void ObjectDetector::detect(cv::Mat& image, std::vector<cv::KeyPoint> &keypoints
     assert(gray.type() == CV_8UC1);
 
     std::vector<cv::Mat *> binaryImages;
-    _algorithm->setImage(gray);
-    _algorithm->getBinaryImages(binaryImages);
+    thresholdAlgorithm->setImage(gray);
+    thresholdAlgorithm->getBinaryImages(binaryImages);
 
     std::vector<std::vector<Center>> centers;
     for (auto binaryImage : binaryImages) {
@@ -65,10 +67,13 @@ void ObjectDetector::detect(cv::Mat& image, std::vector<cv::KeyPoint> &keypoints
         std::copy(newCenters.begin(), newCenters.end(), std::back_inserter(centers));
     }
 
-    //
+    //TODO: remove this and make it dependant of the threshold algorithm?
+    int minRept = std::min(_minRepeatability, static_cast<int>(binaryImages.size()));
+
+    // Skip centers that do not occur enough times.
     keypoints.clear();
     for (auto &center : centers) {
-        if (center.size() < _minRepeatability)
+        if (center.size() < minRept)
             continue;
         cv::Point2d sumPoint(0, 0);
         double normalizer = 0;

@@ -53,7 +53,7 @@ public:
         auto* thr = new cv::Mat;
         cv::threshold(_image, *thr, _threshold, 255, cv::THRESH_BINARY);
         storage.emplace_back(thr);
-        debug(storage);
+        //debug(storage);
     }
 private:
     int _threshold;
@@ -73,7 +73,7 @@ public:
             cv::threshold(_image, *thr, i, 255, cv::THRESH_BINARY);
             storage.emplace_back(thr);
         }
-        debug(storage);
+        //debug(storage);
     }
 private:
     int _min, _max, _step;
@@ -89,7 +89,7 @@ public:
         auto* thr = new cv::Mat;
         cv::threshold(_image, *thr, 0, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
         storage.emplace_back(thr);
-        debug(storage);
+        //debug(storage);
     }
 };
 

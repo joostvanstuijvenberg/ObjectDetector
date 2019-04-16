@@ -26,32 +26,43 @@ int main(int argc, char** argv) {
         exit(EXIT_FAILURE);
     }
 
-    cv::namedWindow("Original");
-    cv::imshow("Original", image);
+    std::vector<cv::KeyPoint> keypoints;
 
-    // Use the threshold range algorithm to find objects using different thresholds.
-    ThresholdAlgorithm* ta = new ThresholdRangeAlgorithm(40, 120, 10);
-    // We'll use an area filter.
-    Filter* f1 = new AreaFilter(8000, 80000);
-    //Filter* f2 = new CircularityFilter(0.8, 1.0);
-    ObjectDetector od(ta, MIN_REPEATABILITY, MIN_DIST_BETWEEN_BLOBS);
-    //ObjectDetector od(ta, 1.0, MIN_DIST_BETWEEN_BLOBS);
+    std::string Original {"Original"};
+    cv::namedWindow(Original);
+    cv::moveWindow(Original, 100, 100);
+    cv::imshow(Original, image);
+
+    // Use the threshold range algorithm to find objects using a range of thresholds (min, max, step).
+    auto tra = std::make_shared<ThresholdRangeAlgorithm>(40, 120, 10);
+
+    // We'll use an area filter first.
+    Filter* f1 = new AreaFilter(4000, 50000);
+    ObjectDetector od(MIN_REPEATABILITY, MIN_DIST_BETWEEN_BLOBS);
     od.addFilter(f1);
-    //od.addFilter(f2);
 
     // Detect objects and return their centers as keypoints. Then show these keypoints in a second image window.
-    std::vector<cv::KeyPoint> keypoints;
-    od.detect(image, keypoints);
-    std::cout << keypoints.size() << " keypoints found." << std::endl;
-    cv::Mat results;
-    //cv::drawKeypoints(image, keypoints, results, cv::Scalar(0, 0, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-    cv::drawKeypoints(image, keypoints, results, cv::Scalar(0, 0, 255));
-    cv::namedWindow("Results");
-    cv::moveWindow("Results", 600, 400);
-    cv::imshow("Results", results);
+    od.detect(tra, image, keypoints);
+    std::string Results1 {"Results filter 1: by area"};
+    cv::Mat results1;
+    cv::drawKeypoints(image, keypoints, results1, cv::Scalar(0, 0, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+    cv::namedWindow(Results1);
+    cv::moveWindow(Results1, 300, 300);
+    cv::imshow(Results1, results1);
+
+    // Now add a second filter.
+    Filter* f2 = new CircularityFilter(0.75, 1.0);
+    od.addFilter(f2);
+    od.detect(tra, image, keypoints);
+    std::string Results2 {"Results filter 2: by circularity"};
+    cv::Mat results2;
+    cv::drawKeypoints(image, keypoints, results2, cv::Scalar(0, 0, 255), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+    cv::namedWindow(Results2);
+    cv::moveWindow(Results2, 500, 500);
+    cv::imshow(Results2, results2);
 
     cv::waitKey(0);
-    delete ta;
     delete f1;
+    delete f2;
     return 0;
 }
