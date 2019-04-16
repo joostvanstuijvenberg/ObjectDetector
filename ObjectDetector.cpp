@@ -12,7 +12,7 @@
 /* ---------------------------------------------------------------------------------------------- */
 /* addFilter()                                                                                    */
 /* ---------------------------------------------------------------------------------------------- */
-void ObjectDetector::addFilter(Filter *filter) {
+void ObjectDetector::addFilter(std::shared_ptr<Filter> filter) {
     _filters.emplace_back(filter);
 }
 
@@ -112,7 +112,7 @@ void ObjectDetector::findBlobs(cv::Mat& binaryImage, std::vector<Center>& center
 
         // Process all filters until the first one that filters out the contour.
         bool filtered = false;
-        for (Filter* f : _filters)
+        for (auto f : _filters)
         {
             if (f->filter(binaryImage, contour, center, m))
             {

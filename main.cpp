@@ -37,9 +37,8 @@ int main(int argc, char** argv) {
     auto tra = std::make_shared<ThresholdRangeAlgorithm>(40, 120, 10);
 
     // We'll use an area filter first.
-    Filter* f1 = new AreaFilter(4000, 50000);
     ObjectDetector od(MIN_REPEATABILITY, MIN_DIST_BETWEEN_BLOBS);
-    od.addFilter(f1);
+    od.addFilter(std::make_shared<AreaFilter>(4000, 50000));
 
     // Detect objects and return their centers as keypoints. Then show these keypoints in a second image window.
     od.detect(tra, image, keypoints);
@@ -51,8 +50,7 @@ int main(int argc, char** argv) {
     cv::imshow(Results1, results1);
 
     // Now add a second filter.
-    Filter* f2 = new CircularityFilter(0.75, 1.0);
-    od.addFilter(f2);
+    od.addFilter(std::make_shared<CircularityFilter>(0.75, 1.0));
     od.detect(tra, image, keypoints);
     std::string Results2 {"Results filter 2: by circularity"};
     cv::Mat results2;
@@ -62,7 +60,5 @@ int main(int argc, char** argv) {
     cv::imshow(Results2, results2);
 
     cv::waitKey(0);
-    delete f1;
-    delete f2;
     return 0;
 }
