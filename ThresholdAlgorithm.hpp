@@ -48,9 +48,9 @@ protected:
 class FixedThresholdAlgorithm: public ThresholdAlgorithm
 {
 public:
-    FixedThresholdAlgorithm(int threshold): _threshold(threshold) {}
+    explicit FixedThresholdAlgorithm(int threshold): _threshold(threshold) {}
     void getBinaryImages(std::vector<cv::Mat *> &storage) override {
-        cv::Mat* thr = new cv::Mat;
+        auto* thr = new cv::Mat;
         cv::threshold(_image, *thr, _threshold, 255, cv::THRESH_BINARY);
         storage.emplace_back(thr);
         debug(storage);
@@ -69,7 +69,7 @@ public:
     : _min(min), _max(max), _step(step) {}
     void getBinaryImages(std::vector<cv::Mat *> &storage) override {
         for (auto i = _min; i <= _max; i += _step) {
-            cv::Mat* thr = new cv::Mat;
+            auto* thr = new cv::Mat;
             cv::threshold(_image, *thr, i, 255, cv::THRESH_BINARY);
             storage.emplace_back(thr);
         }
@@ -86,7 +86,7 @@ class OtsuThresholdAlgorithm: public ThresholdAlgorithm
 {
 public:
     void getBinaryImages(std::vector<cv::Mat *> &storage) override {
-        cv::Mat* thr = new cv::Mat;
+        auto* thr = new cv::Mat;
         cv::threshold(_image, *thr, 0, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
         storage.emplace_back(thr);
         debug(storage);
