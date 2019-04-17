@@ -27,7 +27,7 @@ auto MIN_DIST_BETWEEN_BLOBS = 10.0;
 void showWindow(const std::string &title, const cv::Mat &image, const std::vector<cv::KeyPoint> *keypoints)
 {
     static auto x = 100;
-    static auto y = 100;
+    static auto y = 50;
 
     cv::Mat result;
     if (keypoints != nullptr)
@@ -40,7 +40,7 @@ void showWindow(const std::string &title, const cv::Mat &image, const std::vecto
     cv::imshow(title, result);
 
     x += 100;
-    y += 100;
+    y += 50;
 }
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -102,6 +102,13 @@ int main(int argc, char** argv) {
     od.addFilter(std::make_shared<ColorFilter>(100, 255));
     od.detect(tra, image, keypoints);
     showWindow("Filtering by area and gray value, using a threshold range", image, &keypoints);
+
+    // Start over with a number-of-corners filter.
+    od.resetFilters();
+    od.addFilter(std::make_shared<AreaFilter>(1000, 50000));
+    od.addFilter(std::make_shared<NumberOfCornersFilter>(200, 1000));
+    od.detect(ota, image, keypoints);
+    showWindow("Filtering by area and number of corners, using Otsu's threshold algorithm", image, &keypoints);
 
     // Press <Esc> to quit this demo.
     while(cv::waitKey(40) != 27);
