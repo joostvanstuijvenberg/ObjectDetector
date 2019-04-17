@@ -19,8 +19,9 @@ void ObjectDetector::addFilter(std::shared_ptr<Filter> filter) {
 /* ---------------------------------------------------------------------------------------------- */
 /* detect()                                                                                       */
 /* ---------------------------------------------------------------------------------------------- */
-void ObjectDetector::detect(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorithm, cv::Mat& image, std::vector<cv::KeyPoint> &keypoints)
+std::vector<cv::KeyPoint> ObjectDetector::detect(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorithm, cv::Mat& image)
 {
+    std::vector<cv::KeyPoint> keypoints;
     assert(image.data != 0);
     assert(thresholdAlgorithm != nullptr);
 
@@ -36,8 +37,7 @@ void ObjectDetector::detect(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorit
 
     std::vector<std::vector<Center>> centers;
     for (auto binaryImage : thresholdAlgorithm->binaryImages()) {
-        std::vector<Center> curCenters;
-        findObjects(gray, *binaryImage, curCenters);
+        auto curCenters = findObjects(gray, *binaryImage);
 
         // Find out the number of occurrences of each object.
         std::vector<std::vector<Center> > newCenters;
@@ -65,7 +65,6 @@ void ObjectDetector::detect(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorit
     }
 
     // Skip centers with less than the specified minimum number of occurrences.
-    keypoints.clear();
     for (auto &center : centers) {
         if (center.size() < thresholdAlgorithm->minRepeatability())
             continue;
@@ -79,20 +78,19 @@ void ObjectDetector::detect(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorit
         cv::KeyPoint kpt(sumPoint, (float) (center[center.size() / 2].radius) * 2.0f);
         keypoints.push_back(kpt);
     }
+    return keypoints;
 }
 
 /* ---------------------------------------------------------------------------------------------- */
 /* findObjects()                                                                                  */
 /* ---------------------------------------------------------------------------------------------- */
-void ObjectDetector::findObjects(cv::Mat &originalImage, cv::Mat &binaryImage, std::vector<Center> &centers)
+std::vector<Center> ObjectDetector::findObjects(cv::Mat &originalImage, cv::Mat &binaryImage)
 {
+    std::vector<Center> centers;
+
     // Find contours in the binary image using the findContours()-function. Let this function
     // return a list of contours only (no hierarchical data).
-    centers.clear();
     std::vector <std::vector<cv::Point>> contours;
-    // RETR_LIST: retrieves all of the contours without establishing any hierarchical relationships.
-    // CHAIN_APPROX_NONE stores absolutely all the contour points.
-    //findContours(binaryImage, contours, cv::RETR_LIST, cv::CHAIN_APPROX_NONE);
     findContours(binaryImage, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
 
     // Now process all the contours that were found.
@@ -131,5 +129,6 @@ void ObjectDetector::findObjects(cv::Mat &originalImage, cv::Mat &binaryImage, s
         std::sort(dists.begin(), dists.end());
         center.radius = (dists[(dists.size() - 1) / 2] + dists[dists.size() / 2]) / 2.;
         centers.push_back(center);
+        return centers;
     }
 }

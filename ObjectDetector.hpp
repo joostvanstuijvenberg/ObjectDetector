@@ -24,9 +24,9 @@ public:
     : _minDistBetweenBlobs(minDistBetweenBlobs) {}
     void addFilter(std::shared_ptr<Filter> filter);
     void resetFilters() { _filters.clear(); }
-    void detect(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorithm, cv::Mat& image, std::vector<cv::KeyPoint>& keypoints);
+    std::vector<cv::KeyPoint> detect(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorithm, cv::Mat& image);
 protected:
-    void findObjects(cv::Mat &originalImage, cv::Mat &binaryImage, std::vector<Center> &centers);
+    std::vector<Center> findObjects(cv::Mat &originalImage, cv::Mat &binaryImage);
 private:
     double _minDistBetweenBlobs;
     std::vector<std::shared_ptr<Filter>> _filters;

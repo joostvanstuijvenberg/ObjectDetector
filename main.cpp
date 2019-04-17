@@ -77,37 +77,37 @@ int main(int argc, char** argv) {
 
     // We'll use an area filter first.
     od.addFilter(std::make_shared<AreaFilter>(4000, 50000));
-    od.detect(tra, image, keypoints);
+    keypoints = od.detect(tra, image);
     showWindow("Filtering by area, using a threshold range", image, &keypoints);
 
     // Now we add a circularity filter.
     od.addFilter(std::make_shared<CircularityFilter>(0.75, 1.0));
-    od.detect(tra, image, keypoints);
+    keypoints = od.detect(tra, image);
     showWindow("Filtering by area and circularity, using a threshold range", image, &keypoints);
 
     // Filtering by both area and inertia.
     od.resetFilters();
     od.addFilter(std::make_shared<AreaFilter>(4000, 15000));
     od.addFilter(std::make_shared<InertiaFilter>(0.05, 0.75));
-    od.detect(tra, image, keypoints);
+    keypoints = od.detect(tra, image);
     showWindow("Filtering by area and inertia, using a threshold range", image, &keypoints);
 
     // Now just select Otsu's threshold algorithm.
-    od.detect(ota, image, keypoints);
+    keypoints = od.detect(ota, image);
     showWindow("Filtering by area and inertia, using Otsu's threshold algorithm", image, &keypoints);
 
     // Now we will show all objects that have a medium gray to white 'color'.
     od.resetFilters();
     od.addFilter(std::make_shared<AreaFilter>(1000, 50000));
-    od.addFilter(std::make_shared<ColorFilter>(100, 255));
-    od.detect(tra, image, keypoints);
+    od.addFilter(std::make_shared<ColorFilter>(80, 255));
+    keypoints = od.detect(tra, image);
     showWindow("Filtering by area and gray value, using a threshold range", image, &keypoints);
 
     // Start over with a number-of-corners filter.
     od.resetFilters();
     od.addFilter(std::make_shared<AreaFilter>(1000, 50000));
     od.addFilter(std::make_shared<NumberOfCornersFilter>(200, 1000));
-    od.detect(ota, image, keypoints);
+    keypoints = od.detect(ota, image);
     showWindow("Filtering by area and number of corners, using Otsu's threshold algorithm", image, &keypoints);
 
     // Press <Esc> to quit this demo.
