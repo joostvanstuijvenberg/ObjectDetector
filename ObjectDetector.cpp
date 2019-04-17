@@ -92,7 +92,8 @@ void ObjectDetector::findObjects(cv::Mat &originalImage, cv::Mat &binaryImage, s
     std::vector <std::vector<cv::Point>> contours;
     // RETR_LIST: retrieves all of the contours without establishing any hierarchical relationships.
     // CHAIN_APPROX_NONE stores absolutely all the contour points.
-    findContours(binaryImage, contours, cv::RETR_LIST, cv::CHAIN_APPROX_NONE);
+    //findContours(binaryImage, contours, cv::RETR_LIST, cv::CHAIN_APPROX_NONE);
+    findContours(binaryImage, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
 
     // Now process all the contours that were found.
     for (auto &contour : contours) {
