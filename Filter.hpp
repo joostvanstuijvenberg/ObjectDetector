@@ -144,22 +144,23 @@ private:
 };
 
 /* ---------------------------------------------------------------------------------------------- */
-/* Number of corners filter                                                                       */
+/* Extent filter: ratio of contour area to bounding rectangle area                                */
 /* ---------------------------------------------------------------------------------------------- */
-class NumberOfCornersFilter : public Filter {
+class ExtentFilter : public Filter {
 public:
-    NumberOfCornersFilter(int min, int max) : _min(min), _max(max) {
+    ExtentFilter(double min, double max) : _min(min), _max(max) {
         assert (_min <= _max);
     }
 
     bool filter(const cv::Mat& grayImage, const cv::Mat& binaryImage, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) override {
-        std::vector<cv::KeyPoint> keypoints;
-        cv::FAST(binaryImage, keypoints, 127);
-        return keypoints.size() <= _min || keypoints.size() >= _max;
+        double contourArea = moments.m00;
+        auto boundingRect = cv::boundingRect(binaryImage);
+        double extent = moments.m00 / boundingRect.area();
+        return extent < _min || extent > _max;
     }
 
 private:
-    int _min, _max;
+    double _min, _max;
 };
 
 #endif //OBJECTDETECTOR_FILTER_H

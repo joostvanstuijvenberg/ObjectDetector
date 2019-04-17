@@ -105,10 +105,10 @@ int main(int argc, char** argv) {
 
     // Start over with a number-of-corners filter.
     od.resetFilters();
-    od.addFilter(std::make_shared<AreaFilter>(1000, 50000));
-    od.addFilter(std::make_shared<NumberOfCornersFilter>(200, 1000));
+    od.addFilter(std::make_shared<AreaFilter>(5000, 50000));
+    od.addFilter(std::make_shared<ExtentFilter>(0.02, 0.04));
     keypoints = od.detect(ota, image);
-    showWindow("Filtering by area and number of corners, using Otsu's threshold algorithm", image, &keypoints);
+    showWindow("Filtering by area and extent ratio, using Otsu's threshold algorithm", image, &keypoints);
 
     // Press <Esc> to quit this demo.
     while(cv::waitKey(40) != 27);
