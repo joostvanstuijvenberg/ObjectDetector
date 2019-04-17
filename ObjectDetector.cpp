@@ -36,7 +36,7 @@ std::vector<cv::KeyPoint> ObjectDetector::detect(std::shared_ptr<ThresholdAlgori
 
     std::vector<std::vector<Center>> centers;
     for (auto binaryImage : thresholdAlgorithm->binaryImages()) {
-        auto curCenters = findObjects(gray, *binaryImage);
+        auto curCenters = findObjects(gray, binaryImage);
 
         // Find out the number of occurrences of each object.
         std::vector<std::vector<Center> > newCenters;
