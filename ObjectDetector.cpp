@@ -37,9 +37,9 @@ void ObjectDetector::detect(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorit
     std::vector<std::vector<Center>> centers;
     for (auto binaryImage : thresholdAlgorithm->binaryImages()) {
         std::vector<Center> curCenters;
-        findBlobs(gray, *binaryImage, curCenters);
+        findObjects(gray, *binaryImage, curCenters);
 
-        //
+        // Find out the number of occurrences of each object.
         std::vector<std::vector<Center> > newCenters;
         for (auto &curCenter : curCenters) {
             bool isNew = true;
@@ -82,9 +82,9 @@ void ObjectDetector::detect(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorit
 }
 
 /* ---------------------------------------------------------------------------------------------- */
-/* findBlobs()                                                                                    */
+/* findObjects()                                                                                  */
 /* ---------------------------------------------------------------------------------------------- */
-void ObjectDetector::findBlobs(cv::Mat& originalImage, cv::Mat& binaryImage, std::vector<Center>& centers)
+void ObjectDetector::findObjects(cv::Mat &originalImage, cv::Mat &binaryImage, std::vector<Center> &centers)
 {
     // Find contours in the binary image using the findContours()-function. Let this function
     // return a list of contours only (no hierarchical data).
