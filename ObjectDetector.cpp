@@ -33,10 +33,9 @@ void ObjectDetector::detect(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorit
 
     std::vector<cv::Mat *> binaryImages;
     thresholdAlgorithm->setImage(gray);
-    thresholdAlgorithm->binaryImages(binaryImages);
 
     std::vector<std::vector<Center>> centers;
-    for (auto binaryImage : binaryImages) {
+    for (auto binaryImage : thresholdAlgorithm->binaryImages()) {
         std::vector<Center> curCenters;
         findBlobs(gray, *binaryImage, curCenters);
 

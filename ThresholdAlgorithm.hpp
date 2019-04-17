@@ -22,11 +22,12 @@ class ThresholdAlgorithm
 public:
     explicit ThresholdAlgorithm(int minRepeatability = 1) : _minRepeatability(minRepeatability) {}
     void setImage(cv::Mat& image) { _image = image; }
-    virtual void binaryImages(std::vector<cv::Mat *> &storage) = 0;
+    virtual std::vector<cv::Mat*> binaryImages() = 0;
     int minRepeatability() { return _minRepeatability; }
 protected:
     cv::Mat _image;
     int _minRepeatability;
+    std::vector<cv::Mat*> result;
     void debug(std::vector<cv::Mat*>& storage)
     {
         int w = 0;
@@ -53,11 +54,13 @@ class FixedThresholdAlgorithm: public ThresholdAlgorithm
 public:
     explicit FixedThresholdAlgorithm(int threshold)
     : ThresholdAlgorithm(), _threshold(threshold) {}
-    void binaryImages(std::vector<cv::Mat *> &storage) override {
+    std::vector<cv::Mat*> binaryImages() override {
+        result.clear();
         auto* thr = new cv::Mat;
         cv::threshold(_image, *thr, _threshold, 255, cv::THRESH_BINARY);
-        storage.emplace_back(thr);
-        //debug(storage);
+        result.emplace_back(thr);
+        //debug(result);
+        return result;
     }
 private:
     int _threshold;
@@ -71,13 +74,15 @@ class ThresholdRangeAlgorithm: public ThresholdAlgorithm
 public:
     ThresholdRangeAlgorithm(int min, int max, int step, int minRepeatability)
     : ThresholdAlgorithm(minRepeatability),_min(min), _max(max), _step(step) {}
-    void binaryImages(std::vector<cv::Mat *> &storage) override {
+    std::vector<cv::Mat*>  binaryImages() override {
+        result.clear();
         for (auto i = _min; i <= _max; i += _step) {
             auto* thr = new cv::Mat;
             cv::threshold(_image, *thr, i, 255, cv::THRESH_BINARY);
-            storage.emplace_back(thr);
+            result.emplace_back(thr);
         }
-        //debug(storage);
+        //debug(result);
+        return result;
     }
 private:
     int _min, _max, _step;
@@ -91,11 +96,13 @@ class OtsuThresholdAlgorithm: public ThresholdAlgorithm
 public:
     OtsuThresholdAlgorithm()
     : ThresholdAlgorithm() {}
-    void binaryImages(std::vector<cv::Mat *> &storage) override {
+    std::vector<cv::Mat*>  binaryImages() override {
+        result.clear();
         auto* thr = new cv::Mat;
         cv::threshold(_image, *thr, 0, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
-        storage.emplace_back(thr);
+        result.emplace_back(thr);
         //debug(storage);
+        return result;
     }
 };
 
