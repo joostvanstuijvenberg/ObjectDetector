@@ -53,7 +53,9 @@ class FixedThresholdAlgorithm: public ThresholdAlgorithm
 {
 public:
     explicit FixedThresholdAlgorithm(int threshold)
-    : ThresholdAlgorithm(), _threshold(threshold) {}
+    : ThresholdAlgorithm(), _threshold(threshold) {
+        assert(_minRepeatability == 1);
+    }
     std::vector<cv::Mat*> binaryImages() override {
         result.clear();
         auto* thr = new cv::Mat;
@@ -73,7 +75,9 @@ class ThresholdRangeAlgorithm: public ThresholdAlgorithm
 {
 public:
     ThresholdRangeAlgorithm(int min, int max, int step, int minRepeatability)
-    : ThresholdAlgorithm(minRepeatability),_min(min), _max(max), _step(step) {}
+    : ThresholdAlgorithm(minRepeatability),_min(min), _max(max), _step(step) {
+        assert(_minRepeatability <= (max - min) / step);
+    }
     std::vector<cv::Mat*>  binaryImages() override {
         result.clear();
         for (auto i = _min; i <= _max; i += _step) {
@@ -95,7 +99,9 @@ class OtsuThresholdAlgorithm: public ThresholdAlgorithm
 {
 public:
     OtsuThresholdAlgorithm()
-    : ThresholdAlgorithm() {}
+    : ThresholdAlgorithm() {
+        assert(_minRepeatability == 1);
+    }
     std::vector<cv::Mat*>  binaryImages() override {
         result.clear();
         auto* thr = new cv::Mat;
