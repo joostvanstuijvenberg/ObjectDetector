@@ -81,11 +81,11 @@ public:
     std::vector<cv::Mat>  binaryImages() override {
         result.clear();
         for (auto i = _min; i <= _max; i += _step) {
-            auto* thr = new cv::Mat;
+            auto thr = new cv::Mat;
             cv::threshold(_image, *thr, i, 255, cv::THRESH_BINARY);
             result.emplace_back(*thr);
         }
-        debug(result);
+        //debug(result);
         return result;
     }
 private:
@@ -104,7 +104,7 @@ public:
     }
     std::vector<cv::Mat>  binaryImages() override {
         result.clear();
-        auto* thr = new cv::Mat;
+        auto thr = new cv::Mat;
         cv::threshold(_image, *thr, 0, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
         result.emplace_back(*thr);
         //debug(storage);

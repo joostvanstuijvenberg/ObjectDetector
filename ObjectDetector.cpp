@@ -31,11 +31,11 @@ std::vector<cv::KeyPoint> ObjectDetector::detect(std::shared_ptr<ThresholdAlgori
         gray = image;
     assert(gray.type() == CV_8UC1);
 
-    std::vector<cv::Mat *> binaryImages;
     thresholdAlgorithm->setImage(gray);
 
     std::vector<std::vector<Center>> centers;
-    for (auto binaryImage : thresholdAlgorithm->binaryImages()) {
+    auto binaryImages = thresholdAlgorithm->binaryImages();
+    for (auto binaryImage : binaryImages) {
         auto curCenters = findObjects(gray, binaryImage);
 
         // Find out the number of occurrences of each object.
@@ -130,6 +130,6 @@ std::vector<Center> ObjectDetector::findObjects(cv::Mat &originalImage, cv::Mat 
         std::sort(dists.begin(), dists.end());
         center.radius = (dists[(dists.size() - 1) / 2] + dists[dists.size() / 2]) / 2.;
         centers.push_back(center);
-        return centers;
     }
+    return centers;
 }
