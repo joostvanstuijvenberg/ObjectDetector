@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
         exit(EXIT_FAILURE);
     }
 
-    std::vector<cv::KeyPoint> keypoints;
+    //std::vector<cv::KeyPoint> keypoints;
     showWindow("Original", image, nullptr);
 
     // Use the threshold range algorithm to find objects using a range of thresholds (min, max, step)
@@ -77,7 +77,7 @@ int main(int argc, char** argv) {
 
     // We'll use an area filter first.
     od.addFilter(std::make_shared<AreaFilter>(4000, 50000));
-    keypoints = od.detect(tra, image);
+    auto keypoints = od.detect(tra, image);
     showWindow("Filtering by area, using a threshold range", image, &keypoints);
 
     // Now we add a circularity filter.

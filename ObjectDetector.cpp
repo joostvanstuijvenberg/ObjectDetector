@@ -21,7 +21,6 @@ void ObjectDetector::addFilter(std::shared_ptr<Filter> filter) {
 /* ---------------------------------------------------------------------------------------------- */
 std::vector<cv::KeyPoint> ObjectDetector::detect(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorithm, cv::Mat& image)
 {
-    std::vector<cv::KeyPoint> keypoints;
     assert(image.data != 0);
     assert(thresholdAlgorithm != nullptr);
 
@@ -64,7 +63,9 @@ std::vector<cv::KeyPoint> ObjectDetector::detect(std::shared_ptr<ThresholdAlgori
         std::copy(newCenters.begin(), newCenters.end(), std::back_inserter(centers));
     }
 
-    // Skip centers with less than the specified minimum number of occurrences.
+    // Convert the centers that were found into keypoints. Omit centers with less than the specified
+    // minimum number of occurrences.
+    std::vector<cv::KeyPoint> keypoints;
     for (auto &center : centers) {
         if (center.size() < thresholdAlgorithm->minRepeatability())
             continue;

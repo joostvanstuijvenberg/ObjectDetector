@@ -1,0 +1,4 @@
+Allows dynamic change of parameters (doesn't SimpleBlobDetector::Params do this too?)
+Multiple threshold algorithms, including Otsu's.
+We can use user defined filter classes.
+findContours uses CHAIN_APPROX_SIMPLE (as opposed to SimpleBlobDetector, which uses CHAIN_APPROX_NONE).
