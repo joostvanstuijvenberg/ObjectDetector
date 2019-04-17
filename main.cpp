@@ -98,8 +98,8 @@ int main(int argc, char** argv) {
 
     // Now we will show all objects that have a medium gray to white 'color'.
     od.resetFilters();
-    od.addFilter(std::make_shared<AreaFilter>(100, 50000));
-    od.addFilter(std::make_shared<ColorFilter>(140, 255));
+    od.addFilter(std::make_shared<AreaFilter>(1000, 50000));
+    od.addFilter(std::make_shared<ColorFilter>(140, 160));
     keypoints = od.detect(tra, image);
     showWindow("Filtering by area and gray value, using a threshold range", image, &keypoints);
 
