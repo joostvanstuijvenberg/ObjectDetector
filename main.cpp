@@ -6,6 +6,9 @@
 /* filters to be applied. This can be changed run-time and filtering parameters can be specified  */
 /* programmatically.                                                                              */
 /*                                                                                                */
+/* Please note that this file just contains a demo, and you can throw it away and implement the   */
+/* ObjectDetector class in your own application.                                                  */
+/*                                                                                                */
 /* Joost van Stuijvenberg                                                                         */
 /* April 2019                                                                                     */
 /* ============================================================================================== */
@@ -62,7 +65,6 @@ int main(int argc, char** argv) {
         exit(EXIT_FAILURE);
     }
 
-    //std::vector<cv::KeyPoint> keypoints;
     showWindow("Original", image, nullptr);
 
     // Create the threshold range algorithm to find objects using a range of thresholds (min, max, step)
