@@ -1,6 +1,8 @@
 /* ============================================================================================== */
 /* Center.hpp                                                                                     */
 /*                                                                                                */
+/* This file is part of ObjectDetector (github.com/joostvanstuijvenberg/ObjectDetector.git)       */
+/*                                                                                                */
 /* Joost van Stuijvenberg                                                                         */
 /* April 2019                                                                                     */
 /* ============================================================================================== */

@@ -1,6 +1,8 @@
 /* ============================================================================================== */
 /* ObjectDetector.cpp                                                                             */
 /*                                                                                                */
+/* This file is part of ObjectDetector (github.com/joostvanstuijvenberg/ObjectDetector.git)       */
+/*                                                                                                */
 /* Joost van Stuijvenberg                                                                         */
 /* April 2019                                                                                     */
 /* ============================================================================================== */
@@ -24,6 +26,7 @@ std::vector<cv::KeyPoint> ObjectDetector::detect(std::shared_ptr<ThresholdAlgori
     assert(image.data != 0);
     assert(thresholdAlgorithm != nullptr);
 
+    // Convert the image to grayscale, when needed.
     cv::Mat gray;
     if (image.channels() == 3 || image.channels() == 4)
         cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);

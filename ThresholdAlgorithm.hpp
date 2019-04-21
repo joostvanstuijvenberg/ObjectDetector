@@ -1,6 +1,8 @@
 /* ============================================================================================== */
 /* ThresholdAlgorithm.hpp                                                                         */
 /*                                                                                                */
+/* This file is part of ObjectDetector (github.com/joostvanstuijvenberg/ObjectDetector.git)       */
+/*                                                                                                */
 /* Joost van Stuijvenberg                                                                         */
 /* April 2019                                                                                     */
 /* ============================================================================================== */
@@ -28,23 +30,25 @@ protected:
     cv::Mat _image;
     int _minRepeatability;
     std::vector<cv::Mat> result;
-    void debug(std::vector<cv::Mat>& storage)
-    {
-        int w = 0;
-        std::vector<std::string> winNames;
-        for (auto i : storage)
-        {
-            std::ostringstream os;
-            os << "Debug " << w++;
-            winNames.emplace_back(os.str());
-            cv::namedWindow(os.str());
-            cv::imshow(os.str(), i);
-        }
-        cv::waitKey(0);
-        for (auto w : winNames)
-            cv::destroyWindow(w);
-    }
+    void debug(std::vector<cv::Mat>& storage);
 };
+
+inline void ThresholdAlgorithm::debug(std::vector<cv::Mat>& storage)
+{
+    int w = 0;
+    std::vector<std::string> winNames;
+    for (auto i : storage)
+    {
+        std::ostringstream os;
+        os << "Debug " << w++;
+        winNames.emplace_back(os.str());
+        cv::namedWindow(os.str());
+        cv::imshow(os.str(), i);
+    }
+    cv::waitKey(0);
+    for (auto w : winNames)
+        cv::destroyWindow(w);
+}
 
 /* ---------------------------------------------------------------------------------------------- */
 /* Fixed threshold algorithm                                                                      */
@@ -107,7 +111,7 @@ public:
         auto thr = new cv::Mat;
         cv::threshold(_image, *thr, 0, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
         result.emplace_back(*thr);
-        //debug(storage);
+        //debug(result);
         return result;
     }
 };

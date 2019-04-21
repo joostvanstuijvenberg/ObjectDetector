@@ -1,6 +1,8 @@
 /* ============================================================================================== */
 /* Filter.hpp                                                                                     */
 /*                                                                                                */
+/* This file is part of ObjectDetector (github.com/joostvanstuijvenberg/ObjectDetector.git)       */
+/*                                                                                                */
 /* Joost van Stuijvenberg                                                                         */
 /* April 2019                                                                                     */
 /* ============================================================================================== */
@@ -73,7 +75,7 @@ public:
         // area and the hull area is not within the specified limits.
         std::vector<cv::Point> hull;
         convexHull(cv::Mat(contour), hull);
-        double area = contourArea(cv::Mat(contour));
+        double area = moments.m00;
         double hullArea = contourArea(cv::Mat(hull));
         double ratio = area / hullArea;
         return ratio < _min || ratio > _max;
