@@ -16,6 +16,19 @@
 
 #include "opencv2/opencv.hpp"
 
+#define NODE_THRESHOLD              "threshold"
+#define NODE_TYPE                   "type"
+#define NODE_MIN                    "min"
+#define NODE_MAX                    "max"
+#define NODE_STEP                   "step"
+#define NODE_MIN_REPEATABLILITY     "minRepeatability"
+
+#define THRESHOLD_ALGORITHM_FIXED   "Fixed"
+#define THRESHOLD_ALGORITHM_OTSU    "Otsu"
+#define THRESHOLD_ALGORITHM_RANGE   "Range"
+
+class ThresholdFixedAlgorithm;
+
 /* ---------------------------------------------------------------------------------------------- */
 /* Abstract threshold algorithm                                                                   */
 /* ---------------------------------------------------------------------------------------------- */
@@ -24,8 +37,10 @@ class ThresholdAlgorithm
 public:
     explicit ThresholdAlgorithm(int minRepeatability = 1) : _minRepeatability(minRepeatability) {}
     void setImage(cv::Mat image) { _image = image; }
-    virtual std::vector<cv::Mat> binaryImages() = 0;
     int minRepeatability() { return _minRepeatability; }
+    virtual std::vector<cv::Mat> binaryImages() = 0;
+    virtual void read(const cv::FileNode &node) = 0;
+    virtual void write(cv::FileStorage &storage) const = 0;
 protected:
     cv::Mat _image;
     int _minRepeatability;
@@ -53,11 +68,11 @@ inline void ThresholdAlgorithm::debug(std::vector<cv::Mat>& storage)
 /* ---------------------------------------------------------------------------------------------- */
 /* Fixed threshold algorithm                                                                      */
 /* ---------------------------------------------------------------------------------------------- */
-class FixedThresholdAlgorithm: public ThresholdAlgorithm
+class ThresholdFixedAlgorithm: public ThresholdAlgorithm
 {
 public:
-    explicit FixedThresholdAlgorithm(int threshold)
-    : ThresholdAlgorithm(), _threshold(threshold) {
+    explicit ThresholdFixedAlgorithm(int threshold = 0)
+    : ThresholdAlgorithm(1), _threshold(threshold) {
         assert(_minRepeatability == 1);
     }
     std::vector<cv::Mat> binaryImages() override {
@@ -68,6 +83,13 @@ public:
         //debug(result);
         return result;
     }
+    void read(const cv::FileNode &node) override {
+        _threshold = (int)node[NODE_THRESHOLD];
+    };
+    void write(cv::FileStorage &storage) const override {
+        storage << NODE_TYPE << THRESHOLD_ALGORITHM_FIXED;
+        storage << NODE_THRESHOLD << _threshold;
+    };
 private:
     int _threshold;
 };
@@ -78,7 +100,7 @@ private:
 class ThresholdRangeAlgorithm: public ThresholdAlgorithm
 {
 public:
-    ThresholdRangeAlgorithm(int min, int max, int step, int minRepeatability)
+    explicit ThresholdRangeAlgorithm(int min = 0, int max = 255, int step = 10, int minRepeatability = 10)
     : ThresholdAlgorithm(minRepeatability),_min(min), _max(max), _step(step) {
         assert(_minRepeatability <= (max - min) / step);
     }
@@ -92,6 +114,19 @@ public:
         //debug(result);
         return result;
     }
+    void read(const cv::FileNode &node) override {
+        _min = (int)node[NODE_MIN];
+        _max = (int)node[NODE_MAX];
+        _step = (int)node[NODE_STEP];
+        _minRepeatability = (int)node[NODE_MIN_REPEATABLILITY];
+    };
+    void write(cv::FileStorage &storage) const override {
+        storage << NODE_TYPE << THRESHOLD_ALGORITHM_RANGE;
+        storage << NODE_MIN << _min;
+        storage << NODE_MAX << _max;
+        storage << NODE_STEP << _step;
+        storage << NODE_MIN_REPEATABLILITY << _minRepeatability;
+    };
 private:
     int _min, _max, _step;
 };
@@ -99,11 +134,11 @@ private:
 /* ---------------------------------------------------------------------------------------------- */
 /* Otsu's threshold algorithm                                                                     */
 /* ---------------------------------------------------------------------------------------------- */
-class OtsuThresholdAlgorithm: public ThresholdAlgorithm
+class ThresholdOtsuAlgorithm: public ThresholdAlgorithm
 {
 public:
-    OtsuThresholdAlgorithm()
-    : ThresholdAlgorithm() {
+    ThresholdOtsuAlgorithm()
+    : ThresholdAlgorithm(1) {
         assert(_minRepeatability == 1);
     }
     std::vector<cv::Mat>  binaryImages() override {
@@ -114,6 +149,10 @@ public:
         //debug(result);
         return result;
     }
+    void read(const cv::FileNode &node) override {};
+    void write(cv::FileStorage &storage) const override {
+        storage << NODE_TYPE << THRESHOLD_ALGORITHM_OTSU;
+    };
 };
 
 #endif //OBJECTDETECTOR_THRESHOLDALGORITHM_HPP
