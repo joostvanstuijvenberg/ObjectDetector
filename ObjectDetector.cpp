@@ -21,10 +21,10 @@ void ObjectDetector::addFilter(std::shared_ptr<Filter> filter) {
 /* ---------------------------------------------------------------------------------------------- */
 /* detect()                                                                                       */
 /* ---------------------------------------------------------------------------------------------- */
-std::vector<cv::KeyPoint> ObjectDetector::detect(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorithm, cv::Mat& image)
+std::vector<cv::KeyPoint> ObjectDetector::detect(cv::Mat& image)
 {
     assert(image.data != 0);
-    assert(thresholdAlgorithm != nullptr);
+    assert(_thresholdAlgorithm != nullptr);
 
     // Convert the image to grayscale, when needed.
     cv::Mat gray;
@@ -34,10 +34,10 @@ std::vector<cv::KeyPoint> ObjectDetector::detect(std::shared_ptr<ThresholdAlgori
         gray = image;
     assert(gray.type() == CV_8UC1);
 
-    thresholdAlgorithm->setImage(gray);
+    _thresholdAlgorithm->setImage(gray);
 
     std::vector<std::vector<Center>> centers;
-    auto binaryImages = thresholdAlgorithm->binaryImages();
+    auto binaryImages = _thresholdAlgorithm->binaryImages();
     for (auto binaryImage : binaryImages) {
         auto curCenters = findObjects(gray, binaryImage);
 
@@ -70,7 +70,7 @@ std::vector<cv::KeyPoint> ObjectDetector::detect(std::shared_ptr<ThresholdAlgori
     // minimum number of occurrences.
     std::vector<cv::KeyPoint> keypoints;
     for (auto &center : centers) {
-        if (center.size() < thresholdAlgorithm->minRepeatability())
+        if (center.size() < _thresholdAlgorithm->minRepeatability())
             continue;
         cv::Point2d sumPoint(0, 0);
         double normalizer = 0;

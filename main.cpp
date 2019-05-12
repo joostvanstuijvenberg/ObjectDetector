@@ -21,7 +21,6 @@
 
 #include "ObjectDetector.hpp"
 #include "ThresholdAlgorithm.hpp"
-#include "Parameters.hpp"
 
 /* ---------------------------------------------------------------------------------------------- */
 /* showWindow() - utility function to show the results of object detection                       */
@@ -48,18 +47,6 @@ void showWindow(const std::string &title, const cv::Mat &image, const std::vecto
 /* main()                                                                                         */
 /* ---------------------------------------------------------------------------------------------- */
 int main(int argc, char **argv) {
-
-#define GENERATE_XML
-#ifdef GENERATE_XML
-    // Use this as a convenience to generate the xml parameter file.
-    cv::FileStorage temp("parameters.xml", cv::FileStorage::WRITE);
-    Parameters x;
-    x.thresholdAlgorithm = new ThresholdRangeAlgorithm(40, 150, 10, 3);
-    //p.thresholdAlgorithm = new ThresholdOtsuAlgorithm;
-    x.minDistBetweenBlobs = 10.0;
-    x.write(temp);
-    temp.release();
-#endif
 
     // See if a filename was specified as the first parameter and try to open and show it.
     if (argc != 2) {
@@ -90,12 +77,13 @@ int main(int argc, char **argv) {
 
     // We'll use an area filter first.
     od.addFilter(std::make_shared<AreaFilter>(4000, 50000));
-    auto keypoints = od.detect(tra, image);
+    od.setThresholdAlgorithm(tra);
+    auto keypoints = od.detect(image);
     showWindow("Area: 4000 - 50000, threshold algorithm: range", image, &keypoints);
 
     // Now we add a circularity filter.
     od.addFilter(std::make_shared<CircularityFilter>(0.75, 1.0));
-    keypoints = od.detect(tra, image);
+    keypoints = od.detect(image);
     showWindow("Area: 4000 - 50000, circularity: 0.75 - 1.0, threshold algorithm: range 40 - 150, step 10", image,
                &keypoints);
 
@@ -103,42 +91,48 @@ int main(int argc, char **argv) {
     od.resetFilters();
     od.addFilter(std::make_shared<AreaFilter>(4000, 15000));
     od.addFilter(std::make_shared<InertiaFilter>(0.05, 0.75));
-    keypoints = od.detect(tra, image);
+    keypoints = od.detect(image);
     showWindow("Area: 4000 - 50000, inertia: 0.05 - 0.75, threshold algorithm: range 40 - 150, step 10", image,
                &keypoints);
 
     // Now just select Otsu's threshold algorithm.
-    keypoints = od.detect(ota, image);
+    od.setThresholdAlgorithm(ota);
+    keypoints = od.detect(image);
     showWindow("Area: 4000 - 50000, inertia: 0.05 - 0.75, threshold algorithm: Otsu", image, &keypoints);
 
     // Now we will show all objects that have a medium gray to white 'color'.
+    od.setThresholdAlgorithm(tra);
     od.resetFilters();
     od.addFilter(std::make_shared<AreaFilter>(1000, 50000));
     od.addFilter(std::make_shared<ColorFilter>(140, 160));
-    keypoints = od.detect(tra, image);
+    keypoints = od.detect(image);
     showWindow("Area: 1000 - 50000, gray value: 140 - 160, threshold algorithm: range 40 - 150, step 10", image,
                &keypoints);
 
     // Now let's select the least convex object from the image.
+    od.setThresholdAlgorithm(ota);
     od.resetFilters();
     od.addFilter(std::make_shared<AreaFilter>(1000, 5000));
     od.addFilter(std::make_shared<ConvexityFilter>(0.0, 0.6));
-    keypoints = od.detect(ota, image);
+    keypoints = od.detect(image);
     showWindow("Area: 1000 - 5000, convexity: 0.0 - 0.6, threshold algorithm: Otsu", image, &keypoints);
 
     // Start over with an extent filter.
+    od.setThresholdAlgorithm(fta);
     od.resetFilters();
     od.addFilter(std::make_shared<AreaFilter>(5000, 50000));
     od.addFilter(std::make_shared<ExtentFilter>(0.02, 0.04));
-    keypoints = od.detect(fta, image);
+    keypoints = od.detect(image);
     showWindow("Area: 5000 - 50000, extent ratio: 0.02 - 0.04, threshold algorithm: fixed 100", image, &keypoints);
 
     // Now construct an object detector using parameters.xml
     cv::FileStorage storage("parameters.xml", cv::FileStorage::READ);
     cv::FileNode node = storage["opencv_storage"];
-    Parameters p;
-    p.read(node);
-    ObjectDetector o2(p.minDistBetweenBlobs);
+    ObjectDetector o2;
+    o2.read(node);
+    keypoints = o2.detect(image);
+    showWindow("Using parameters.xml", image, &keypoints);
+
 
     // Press <Esc> to quit this demo.
     while (cv::waitKey(500) != 27);
