@@ -64,11 +64,11 @@ int main(int argc, char **argv) {
     // and with a specified minimum repeatability, followed by an Otsu's threshold algorithm and a
     // fixed threshold algorithm.
     auto tra = std::make_shared<ThresholdRangeAlgorithm>(40, 150, 10, 3);
-    auto ota = std::make_shared<ThresholdOtsuAlgorithm>();
-    auto fta = std::make_shared<ThresholdFixedAlgorithm>(100);
+    auto toa = std::make_shared<ThresholdOtsuAlgorithm>();
+    auto tfa = std::make_shared<ThresholdFixedAlgorithm>(100);
 
-    // Create an object detector. By default, the minimum distance between BLOBs is 10.0;
-    ObjectDetector od;
+    // Create an object detector. Set the minimum distance between BLOBs to 10.0;
+    ObjectDetector od(10.0);
 
     // Show the original.
     showWindow("Original", image, nullptr);
@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
                &keypoints);
 
     // Now just select Otsu's threshold algorithm.
-    od.setThresholdAlgorithm(ota);
+    od.setThresholdAlgorithm(toa);
     keypoints = od.detect(image);
     showWindow("Area: 4000 - 50000, inertia: 0.05 - 0.75, threshold algorithm: Otsu", image, &keypoints);
 
@@ -108,7 +108,7 @@ int main(int argc, char **argv) {
                &keypoints);
 
     // Now let's select the least convex object from the image.
-    od.setThresholdAlgorithm(ota);
+    od.setThresholdAlgorithm(toa);
     od.resetFilters();
     od.addFilter(std::make_shared<AreaFilter>(1000, 5000));
     od.addFilter(std::make_shared<ConvexityFilter>(0.0, 0.6));
@@ -116,19 +116,22 @@ int main(int argc, char **argv) {
     showWindow("Area: 1000 - 5000, convexity: 0.0 - 0.6, threshold algorithm: Otsu", image, &keypoints);
 
     // Start over with an extent filter.
-    od.setThresholdAlgorithm(fta);
+    od.setThresholdAlgorithm(tfa);
     od.resetFilters();
     od.addFilter(std::make_shared<AreaFilter>(5000, 50000));
     od.addFilter(std::make_shared<ExtentFilter>(0.02, 0.04));
     keypoints = od.detect(image);
     showWindow("Area: 5000 - 50000, extent ratio: 0.02 - 0.04, threshold algorithm: fixed 100", image, &keypoints);
 
+    //cv::FileStorage temp("parameters.xml", cv::FileStorage::WRITE);
+    //od.write(temp);
+    //temp.release();
+
     // Now construct an object detector using parameters.xml
     cv::FileStorage storage("parameters.xml", cv::FileStorage::READ);
     cv::FileNode node = storage["opencv_storage"];
     ObjectDetector o2;
     o2.read(node);
-    o2.addFilter(std::make_shared<AreaFilter>(4000, 50000));
     keypoints = o2.detect(image);
     showWindow("Using parameters.xml", image, &keypoints);
 

@@ -10,19 +10,22 @@
 #ifndef OBJECTDETECTOR_THRESHOLDALGORITHM_HPP
 #define OBJECTDETECTOR_THRESHOLDALGORITHM_HPP
 
-#define NODE_THRESHOLD      "threshold"
-#define NODE_TYPE           "type"
-#define NODE_MIN            "min"
-#define NODE_MAX            "max"
-#define NODE_STEP           "step"
-
-#define NODE_MIN_REPEATABLILITY "minRepeatability"
-
 #include <vector>
 #include <memory>
 #include <sstream>
 
 #include "opencv2/opencv.hpp"
+
+#define NODE_THRESHOLD              "threshold"
+#define NODE_TYPE                   "type"
+#define NODE_MIN                    "min"
+#define NODE_MAX                    "max"
+#define NODE_STEP                   "step"
+#define NODE_MIN_REPEATABLILITY     "minRepeatability"
+
+#define THRESHOLD_ALGORITHM_FIXED   "Fixed"
+#define THRESHOLD_ALGORITHM_OTSU    "Otsu"
+#define THRESHOLD_ALGORITHM_RANGE   "Range"
 
 class ThresholdFixedAlgorithm;
 
@@ -84,7 +87,7 @@ public:
         _threshold = (int)node[NODE_THRESHOLD];
     };
     void write(cv::FileStorage &storage) const override {
-        storage << NODE_TYPE << "Fixed";
+        storage << NODE_TYPE << THRESHOLD_ALGORITHM_FIXED;
         storage << NODE_THRESHOLD << _threshold;
     };
 private:
@@ -118,7 +121,7 @@ public:
         _minRepeatability = (int)node[NODE_MIN_REPEATABLILITY];
     };
     void write(cv::FileStorage &storage) const override {
-        storage << "type" << "Range";
+        storage << NODE_TYPE << THRESHOLD_ALGORITHM_RANGE;
         storage << NODE_MIN << _min;
         storage << NODE_MAX << _max;
         storage << NODE_STEP << _step;
@@ -148,7 +151,7 @@ public:
     }
     void read(const cv::FileNode &node) override {};
     void write(cv::FileStorage &storage) const override {
-        storage << NODE_TYPE << "Otsu";
+        storage << NODE_TYPE << THRESHOLD_ALGORITHM_OTSU;
     };
 };
 
