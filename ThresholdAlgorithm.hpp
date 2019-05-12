@@ -10,6 +10,14 @@
 #ifndef OBJECTDETECTOR_THRESHOLDALGORITHM_HPP
 #define OBJECTDETECTOR_THRESHOLDALGORITHM_HPP
 
+#define NODE_THRESHOLD      "threshold"
+#define NODE_TYPE           "type"
+#define NODE_MIN            "min"
+#define NODE_MAX            "max"
+#define NODE_STEP           "step"
+
+#define NODE_MIN_REPEATABLILITY "minRepeatability"
+
 #include <vector>
 #include <memory>
 #include <sstream>
@@ -72,10 +80,12 @@ public:
         //debug(result);
         return result;
     }
-    void read(const cv::FileNode &node) override {};
+    void read(const cv::FileNode &node) override {
+        _threshold = (int)node[NODE_THRESHOLD];
+    };
     void write(cv::FileStorage &storage) const override {
-        storage << "type" << "Fixed";
-        storage << "threshold" << _threshold;
+        storage << NODE_TYPE << "Fixed";
+        storage << NODE_THRESHOLD << _threshold;
     };
 private:
     int _threshold;
@@ -102,17 +112,17 @@ public:
         return result;
     }
     void read(const cv::FileNode &node) override {
-        _min = (int)node["min"];
-        _max = (int)node["max"];
-        _step = (int)node["step"];
-        _minRepeatability = (int)node["minRepeatability"];
+        _min = (int)node[NODE_MIN];
+        _max = (int)node[NODE_MAX];
+        _step = (int)node[NODE_STEP];
+        _minRepeatability = (int)node[NODE_MIN_REPEATABLILITY];
     };
     void write(cv::FileStorage &storage) const override {
         storage << "type" << "Range";
-        storage << "min" << _min;
-        storage << "max" << _max;
-        storage << "step" << _step;
-        storage << "minRepeatability" << _minRepeatability;
+        storage << NODE_MIN << _min;
+        storage << NODE_MAX << _max;
+        storage << NODE_STEP << _step;
+        storage << NODE_MIN_REPEATABLILITY << _minRepeatability;
     };
 private:
     int _min, _max, _step;
@@ -138,7 +148,7 @@ public:
     }
     void read(const cv::FileNode &node) override {};
     void write(cv::FileStorage &storage) const override {
-        storage << "type" << "Otsu";
+        storage << NODE_TYPE << "Otsu";
     };
 };
 
