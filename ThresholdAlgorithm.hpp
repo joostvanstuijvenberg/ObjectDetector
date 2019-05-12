@@ -16,6 +16,8 @@
 
 #include "opencv2/opencv.hpp"
 
+class ThresholdFixedAlgorithm;
+
 /* ---------------------------------------------------------------------------------------------- */
 /* Abstract threshold algorithm                                                                   */
 /* ---------------------------------------------------------------------------------------------- */
@@ -24,8 +26,10 @@ class ThresholdAlgorithm
 public:
     explicit ThresholdAlgorithm(int minRepeatability = 1) : _minRepeatability(minRepeatability) {}
     void setImage(cv::Mat image) { _image = image; }
-    virtual std::vector<cv::Mat> binaryImages() = 0;
     int minRepeatability() { return _minRepeatability; }
+    virtual std::vector<cv::Mat> binaryImages() = 0;
+    virtual void read(const cv::FileNode &node) = 0;
+    virtual void write(cv::FileStorage &storage) const = 0;
 protected:
     cv::Mat _image;
     int _minRepeatability;
@@ -53,11 +57,11 @@ inline void ThresholdAlgorithm::debug(std::vector<cv::Mat>& storage)
 /* ---------------------------------------------------------------------------------------------- */
 /* Fixed threshold algorithm                                                                      */
 /* ---------------------------------------------------------------------------------------------- */
-class FixedThresholdAlgorithm: public ThresholdAlgorithm
+class ThresholdFixedAlgorithm: public ThresholdAlgorithm
 {
 public:
-    explicit FixedThresholdAlgorithm(int threshold)
-    : ThresholdAlgorithm(), _threshold(threshold) {
+    explicit ThresholdFixedAlgorithm(int threshold = 0)
+    : ThresholdAlgorithm(1), _threshold(threshold) {
         assert(_minRepeatability == 1);
     }
     std::vector<cv::Mat> binaryImages() override {
@@ -68,6 +72,11 @@ public:
         //debug(result);
         return result;
     }
+    void read(const cv::FileNode &node) override {};
+    void write(cv::FileStorage &storage) const override {
+        storage << "type" << "Fixed";
+        storage << "threshold" << _threshold;
+    };
 private:
     int _threshold;
 };
@@ -78,7 +87,7 @@ private:
 class ThresholdRangeAlgorithm: public ThresholdAlgorithm
 {
 public:
-    ThresholdRangeAlgorithm(int min, int max, int step, int minRepeatability)
+    explicit ThresholdRangeAlgorithm(int min = 0, int max = 255, int step = 10, int minRepeatability = 10)
     : ThresholdAlgorithm(minRepeatability),_min(min), _max(max), _step(step) {
         assert(_minRepeatability <= (max - min) / step);
     }
@@ -92,6 +101,19 @@ public:
         //debug(result);
         return result;
     }
+    void read(const cv::FileNode &node) override {
+        _min = (int)node["min"];
+        _max = (int)node["max"];
+        _step = (int)node["step"];
+        _minRepeatability = (int)node["minRepeatability"];
+    };
+    void write(cv::FileStorage &storage) const override {
+        storage << "type" << "Range";
+        storage << "min" << _min;
+        storage << "max" << _max;
+        storage << "step" << _step;
+        storage << "minRepeatability" << _minRepeatability;
+    };
 private:
     int _min, _max, _step;
 };
@@ -99,11 +121,11 @@ private:
 /* ---------------------------------------------------------------------------------------------- */
 /* Otsu's threshold algorithm                                                                     */
 /* ---------------------------------------------------------------------------------------------- */
-class OtsuThresholdAlgorithm: public ThresholdAlgorithm
+class ThresholdOtsuAlgorithm: public ThresholdAlgorithm
 {
 public:
-    OtsuThresholdAlgorithm()
-    : ThresholdAlgorithm() {
+    ThresholdOtsuAlgorithm()
+    : ThresholdAlgorithm(1) {
         assert(_minRepeatability == 1);
     }
     std::vector<cv::Mat>  binaryImages() override {
@@ -114,6 +136,10 @@ public:
         //debug(result);
         return result;
     }
+    void read(const cv::FileNode &node) override {};
+    void write(cv::FileStorage &storage) const override {
+        storage << "type" << "Otsu";
+    };
 };
 
 #endif //OBJECTDETECTOR_THRESHOLDALGORITHM_HPP

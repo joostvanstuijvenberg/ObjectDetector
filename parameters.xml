@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<type>Range</type>
+<min>40</min>
+<max>150</max>
+<step>10</step>
+<minRepeatability>3</minRepeatability>
+<minDistBetweenBlobs>10.</minDistBetweenBlobs>
+</opencv_storage>
