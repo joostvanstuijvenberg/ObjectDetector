@@ -12,13 +12,6 @@
 #include "ObjectDetector.hpp"
 
 /* ---------------------------------------------------------------------------------------------- */
-/* addFilter()                                                                                    */
-/* ---------------------------------------------------------------------------------------------- */
-void ObjectDetector::addFilter(std::shared_ptr<Filter> filter) {
-    _filters.emplace_back(filter);
-}
-
-/* ---------------------------------------------------------------------------------------------- */
 /* detect()                                                                                       */
 /* ---------------------------------------------------------------------------------------------- */
 std::vector<cv::KeyPoint> ObjectDetector::detect(cv::Mat& image)
@@ -90,6 +83,8 @@ std::vector<cv::KeyPoint> ObjectDetector::detect(cv::Mat& image)
 /* ---------------------------------------------------------------------------------------------- */
 std::vector<Center> ObjectDetector::findObjects(cv::Mat &originalImage, cv::Mat &binaryImage)
 {
+    assert(originalImage.data != 0);
+
     std::vector<Center> centers;
 
     // Find contours in the binary image using the findContours()-function. Let this function

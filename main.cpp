@@ -60,20 +60,18 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
-    showWindow("Original", image, nullptr);
-
-    // Create the threshold range algorithm to find objects using a range of thresholds (min, max, step)
-    // and with a specified minimum repeatability.
+    // Create a threshold range algorithm to find objects using a range of thresholds (min, max, step)
+    // and with a specified minimum repeatability, followed by an Otsu's threshold algorithm and a
+    // fixed threshold algorithm.
     auto tra = std::make_shared<ThresholdRangeAlgorithm>(40, 150, 10, 3);
-
-    // Create Otsu's threshold algorithm.
     auto ota = std::make_shared<ThresholdOtsuAlgorithm>();
-
-    // Create a fixed threshold algorithm.
     auto fta = std::make_shared<ThresholdFixedAlgorithm>(100);
 
-    // Create an object detector. Use 10.0 as the minimum distance between BLOBs.
-    ObjectDetector od(10.0);
+    // Create an object detector. By default, the minimum distance between BLOBs is 10.0;
+    ObjectDetector od;
+
+    // Show the original.
+    showWindow("Original", image, nullptr);
 
     // We'll use an area filter first.
     od.addFilter(std::make_shared<AreaFilter>(4000, 50000));
@@ -130,9 +128,9 @@ int main(int argc, char **argv) {
     cv::FileNode node = storage["opencv_storage"];
     ObjectDetector o2;
     o2.read(node);
+    o2.addFilter(std::make_shared<AreaFilter>(4000, 50000));
     keypoints = o2.detect(image);
     showWindow("Using parameters.xml", image, &keypoints);
-
 
     // Press <Esc> to quit this demo.
     while (cv::waitKey(500) != 27);

@@ -25,7 +25,7 @@ public:
     explicit ObjectDetector(double minDistBetweenBlobs = 0.0)
     : _minDistBetweenBlobs(minDistBetweenBlobs) {}
     void setThresholdAlgorithm(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorithm) { _thresholdAlgorithm = thresholdAlgorithm; }
-    void addFilter(std::shared_ptr<Filter> filter);
+    void addFilter(std::shared_ptr<Filter> filter) { _filters.emplace_back(filter); }
     void resetFilters() { _filters.clear(); }
     std::vector<cv::KeyPoint> detect(cv::Mat& image);
     void read(const cv::FileNode &node)
