@@ -111,22 +111,15 @@ std::vector<Center> ObjectDetector::findObjects(cv::Mat &originalImage, cv::Mat 
         center.confidence = 1;
         cv::Moments m = moments(cv::Mat(contour), true); // 2nd parameter specifies image is binary.
 
-        // SKip contours that have no area.
+        // Skip contours that have no area.
         if (m.m00 == 0.0)
             continue;
 
         // Process all filters until the first one that filters out the contour.
         bool filtered = false;
         for (auto f : _filters)
-        {
-            if (f->filter(originalImage, binaryImage, contour, center, m))
-            {
-                filtered = true;
+            if (filtered = f->filter(originalImage, binaryImage, contour, center, m))
                 break;
-            }
-        }
-
-        // If it was filtered out, skip the contour.
         if (filtered)
             continue;
 
