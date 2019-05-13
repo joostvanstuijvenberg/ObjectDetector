@@ -100,7 +100,7 @@ private:
 class ThresholdRangeAlgorithm: public ThresholdAlgorithm
 {
 public:
-    explicit ThresholdRangeAlgorithm(int min = 0, int max = 255, int step = 10, int minRepeatability = 10)
+    explicit ThresholdRangeAlgorithm(int min = 0, int max = 0, int step = 1, int minRepeatability = 0)
     : ThresholdAlgorithm(minRepeatability),_min(min), _max(max), _step(step) {
         assert(_minRepeatability <= (max - min) / step);
     }

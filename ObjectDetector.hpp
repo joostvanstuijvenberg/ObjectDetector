@@ -10,8 +10,8 @@
 #ifndef OBJECTDETECTOR_OBJECTDETECTOR_HPP
 #define OBJECTDETECTOR_OBJECTDETECTOR_HPP
 
-#define NODE_MIN_DIST_BETWEEN_BLOBS     "minDistBetweenBlobs"
 #define NODE_THRESHOLD_ALGORITHM        "thresholdAlgorithm"
+#define NODE_MIN_DIST_BETWEEN_BLOBS     "minDistBetweenBlobs"
 #define NODE_FILTERS                    "filters"
 
 #include <vector>
@@ -39,6 +39,7 @@ public:
 protected:
     std::vector<Center> findObjects(cv::Mat &originalImage, cv::Mat &binaryImage);
 private:
+    std::map<std::string, std::shared_ptr<ThresholdAlgorithm>> _registeredThresholdAlgorithms;
     std::shared_ptr<ThresholdAlgorithm> _thresholdAlgorithm;
     double _minDistBetweenBlobs;
     std::map<std::string, std::shared_ptr<Filter>> _registeredFilters;

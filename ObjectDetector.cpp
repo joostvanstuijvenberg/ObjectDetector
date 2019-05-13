@@ -13,6 +13,10 @@
 
 ObjectDetector::ObjectDetector(double minDistBetweenBlobs)
         : _minDistBetweenBlobs(minDistBetweenBlobs) {
+    _registeredThresholdAlgorithms.emplace("ThresholdFixedAlgorithm", std::make_shared<ThresholdFixedAlgorithm>());
+    _registeredThresholdAlgorithms.emplace("ThresholdOtsuAlgorithm", std::make_shared<ThresholdOtsuAlgorithm>());
+    _registeredThresholdAlgorithms.emplace("ThresholdRangeAlgorithm", std::make_shared<ThresholdRangeAlgorithm>());
+
     _registeredFilters.emplace("AreaFilter", std::make_shared<AreaFilter>());
     _registeredFilters.emplace("CircularityFilter", std::make_shared<CircularityFilter>());
     _registeredFilters.emplace("ConvexityFilter", std::make_shared<ConvexityFilter>());
@@ -145,21 +149,21 @@ std::vector<Center> ObjectDetector::findObjects(cv::Mat &originalImage, cv::Mat 
 void ObjectDetector::read(const cv::FileNode &node) {
 
     // Threshold algorithm
-    auto ta = node[NODE_THRESHOLD_ALGORITHM];
-    auto t = (std::string)ta[NODE_TYPE];
-    if (t == THRESHOLD_ALGORITHM_FIXED)
-        _thresholdAlgorithm = std::make_shared<ThresholdFixedAlgorithm>();
-    if (t == THRESHOLD_ALGORITHM_OTSU)
-        _thresholdAlgorithm = std::make_shared<ThresholdOtsuAlgorithm>();
-    if (t == THRESHOLD_ALGORITHM_RANGE)
-        _thresholdAlgorithm = std::make_shared<ThresholdRangeAlgorithm>();
-    _thresholdAlgorithm->read(node);
+    auto tas = node[NODE_THRESHOLD_ALGORITHM];
+    auto ta = tas.begin();
+    auto tan = (*ta).name();
+    if (_registeredThresholdAlgorithms.count(tan) == 1) {
+        auto t = _registeredThresholdAlgorithms.at(tan);
+        t->read(*ta);
+        setThresholdAlgorithm(t);
+    }
+    //TODO: exception when unknown threshold algorithm specified?
 
     // Minimum distance between BLOBs
     _minDistBetweenBlobs = (double)node[NODE_MIN_DIST_BETWEEN_BLOBS];
 
     // Filters
-    auto f = node["filters"];
+    auto f = node[NODE_FILTERS];
     for (auto fi = f.begin(); fi != f.end(); fi++)
     {
         auto t = (*fi).name();

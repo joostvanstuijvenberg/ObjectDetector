@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
 <opencv_storage>
 <thresholdAlgorithm>
-  <type>Fixed</type>
-  <threshold>100</threshold></thresholdAlgorithm>
+  <ThresholdFixedAlgorithm>
+    <threshold>150</threshold>
+  </ThresholdFixedAlgorithm>
+</thresholdAlgorithm>
 <minDistBetweenBlobs>10.</minDistBetweenBlobs>
 <filters>
   <AreaFilter>
