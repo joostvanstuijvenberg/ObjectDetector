@@ -10,7 +10,7 @@
 /* ObjectDetector class in your own application.                                                  */
 /*                                                                                                */
 /* Joost van Stuijvenberg                                                                         */
-/* April 2019                                                                                     */
+/* Version 1.1 - May 2019                                                                         */
 /* ============================================================================================== */
 
 #include <iostream>
@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
     od.addFilter(std::make_shared<AreaFilter>(4000, 50000));
     od.setThresholdAlgorithm(tra);
     auto keypoints = od.detect(image);
-    showWindow("Area: 4000 - 50000, threshold algorithm: range", image, &keypoints);
+    showWindow("Area: 4000 - 50000, threshold algorithm: range 40 - 150, step 10", image, &keypoints);
 
     // Now we add a circularity filter.
     od.addFilter(std::make_shared<CircularityFilter>(0.75, 1.0));

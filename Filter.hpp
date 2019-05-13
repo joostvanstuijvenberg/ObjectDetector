@@ -4,7 +4,6 @@
 /* This file is part of ObjectDetector (github.com/joostvanstuijvenberg/ObjectDetector.git)       */
 /*                                                                                                */
 /* Joost van Stuijvenberg                                                                         */
-/* April 2019                                                                                     */
 /* ============================================================================================== */
 
 #ifndef OBJECTDETECTOR_FILTER_H
@@ -14,11 +13,19 @@
 
 #include "opencv2/opencv.hpp"
 
-#include "Center.hpp"
-
 #define NODE_TYPE                   "type"
 #define NODE_MIN                    "min"
 #define NODE_MAX                    "max"
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Center data structure                                                                          */
+/* ---------------------------------------------------------------------------------------------- */
+struct Center
+{
+    cv::Point2d location;
+    double radius;
+    double confidence;
+};
 
 /* ---------------------------------------------------------------------------------------------- */
 /* Abstract filter                                                                                */
