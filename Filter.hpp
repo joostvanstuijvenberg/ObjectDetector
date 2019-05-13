@@ -35,7 +35,7 @@ public:
 /* ---------------------------------------------------------------------------------------------- */
 class AreaFilter : public Filter {
 public:
-    AreaFilter(double min, double max) : _min(min), _max(max) {
+    AreaFilter(double min = 0, double max = 0) : _min(min), _max(max) {
         assert (_min <= _max);
     }
     bool filter(const cv::Mat& grayImage, const cv::Mat& binaryImage, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) override {
@@ -60,7 +60,7 @@ private:
 /* ---------------------------------------------------------------------------------------------- */
 class CircularityFilter : public Filter {
 public:
-    CircularityFilter(double min, double max) : _min(min), _max(max) {
+    CircularityFilter(double min = 0, double max = 0) : _min(min), _max(max) {
         assert (_min <= _max);
     }
     bool filter(const cv::Mat& grayImage, const cv::Mat& binaryImage, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) override {
@@ -88,7 +88,7 @@ private:
 /* ---------------------------------------------------------------------------------------------- */
 class ConvexityFilter : public Filter {
 public:
-    ConvexityFilter(double min, double max) : _min(min), _max(max) {
+    ConvexityFilter(double min = 0, double max = 0) : _min(min), _max(max) {
         assert (_min <= _max);
     }
     bool filter(const cv::Mat& grayImage, const cv::Mat& binaryImage, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) override {
@@ -120,7 +120,7 @@ private:
 /* ---------------------------------------------------------------------------------------------- */
 class InertiaFilter : public Filter {
 public:
-    InertiaFilter(double min, double max) : _min(min), _max(max) {
+    InertiaFilter(double min = 0, double max = 0) : _min(min), _max(max) {
         assert (_min <= _max);
     }
     bool filter(const cv::Mat& grayImage, const cv::Mat& binaryImage, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) override {
@@ -164,7 +164,7 @@ private:
 /* ---------------------------------------------------------------------------------------------- */
 class ColorFilter : public Filter {
 public:
-    explicit ColorFilter(uchar min, uchar max) : _min(min), _max(max) {
+    explicit ColorFilter(uchar min = 0, uchar max = 0) : _min(min), _max(max) {
         assert (_min <= _max);
     }
     bool filter(const cv::Mat& grayImage, const cv::Mat& binaryImage, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) override {
@@ -194,7 +194,7 @@ private:
 /* ---------------------------------------------------------------------------------------------- */
 class ExtentFilter : public Filter {
 public:
-    ExtentFilter(double min, double max) : _min(min), _max(max) {
+    ExtentFilter(double min = 0, double max = 0) : _min(min), _max(max) {
         assert (_min <= _max);
     }
     bool filter(const cv::Mat& grayImage, const cv::Mat& binaryImage, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) override {

@@ -11,6 +11,16 @@
 
 #include "ObjectDetector.hpp"
 
+ObjectDetector::ObjectDetector(double minDistBetweenBlobs)
+        : _minDistBetweenBlobs(minDistBetweenBlobs) {
+    _registeredFilters.emplace("AreaFilter", std::make_shared<AreaFilter>());
+    _registeredFilters.emplace("CircularityFilter", std::make_shared<CircularityFilter>());
+    _registeredFilters.emplace("ConvexityFilter", std::make_shared<ConvexityFilter>());
+    _registeredFilters.emplace("InertiaFilter", std::make_shared<InertiaFilter>());
+    _registeredFilters.emplace("ColorFilter", std::make_shared<ColorFilter>());
+    _registeredFilters.emplace("ExtentFilter", std::make_shared<ExtentFilter>());
+}
+
 /* ---------------------------------------------------------------------------------------------- */
 /* detect()                                                                                       */
 /* ---------------------------------------------------------------------------------------------- */
@@ -133,6 +143,8 @@ std::vector<Center> ObjectDetector::findObjects(cv::Mat &originalImage, cv::Mat 
 }
 
 void ObjectDetector::read(const cv::FileNode &node) {
+
+    // Threshold algorithm
     auto ta = node[NODE_THRESHOLD_ALGORITHM];
     auto t = (std::string)ta[NODE_TYPE];
     if (t == THRESHOLD_ALGORITHM_FIXED)
@@ -143,15 +155,21 @@ void ObjectDetector::read(const cv::FileNode &node) {
         _thresholdAlgorithm = std::make_shared<ThresholdRangeAlgorithm>();
     _thresholdAlgorithm->read(node);
 
+    // Minimum distance between BLOBs
     _minDistBetweenBlobs = (double)node[NODE_MIN_DIST_BETWEEN_BLOBS];
 
+    // Filters
     auto f = node["filters"];
     for (auto fi = f.begin(); fi != f.end(); fi++)
     {
-        auto t = (*fi).string();
-        std::cout << t << std::endl;
+        auto t = (*fi).name();
+        if (_registeredFilters.count(t) == 1) {
+            auto f = _registeredFilters.at(t);
+            f->read(*fi);
+            addFilter(f);
+        }
+        //TODO: exception when unknown filter specified?
     }
-    //TODO: filters
 }
 
 void ObjectDetector::write(cv::FileStorage &storage) const {

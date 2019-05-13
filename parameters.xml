@@ -6,9 +6,7 @@
 <minDistBetweenBlobs>10.</minDistBetweenBlobs>
 <filters>
   <AreaFilter>
-    <min>5000.</min>
-    <max>50000.</max></AreaFilter>
-  <ExtentFilter>
-    <min>2.0000000000000000e-02</min>
-    <max>4.0000000000000001e-02</max></ExtentFilter></filters>
+    <min>1000.</min>
+    <max>10000.</max></AreaFilter>
+</filters>
 </opencv_storage>
