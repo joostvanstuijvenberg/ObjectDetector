@@ -131,3 +131,39 @@ std::vector<Center> ObjectDetector::findObjects(cv::Mat &originalImage, cv::Mat 
     }
     return centers;
 }
+
+void ObjectDetector::read(const cv::FileNode &node) {
+    auto ta = node[NODE_THRESHOLD_ALGORITHM];
+    auto t = (std::string)ta[NODE_TYPE];
+    if (t == THRESHOLD_ALGORITHM_FIXED)
+        _thresholdAlgorithm = std::make_shared<ThresholdFixedAlgorithm>();
+    if (t == THRESHOLD_ALGORITHM_OTSU)
+        _thresholdAlgorithm = std::make_shared<ThresholdOtsuAlgorithm>();
+    if (t == THRESHOLD_ALGORITHM_RANGE)
+        _thresholdAlgorithm = std::make_shared<ThresholdRangeAlgorithm>();
+    _thresholdAlgorithm->read(node);
+
+    _minDistBetweenBlobs = (double)node[NODE_MIN_DIST_BETWEEN_BLOBS];
+
+    auto f = node["filters"];
+    for (auto fi = f.begin(); fi != f.end(); fi++)
+    {
+        auto t = (*fi).string();
+        std::cout << t << std::endl;
+    }
+    //TODO: filters
+}
+
+void ObjectDetector::write(cv::FileStorage &storage) const {
+    storage << NODE_THRESHOLD_ALGORITHM << "{";
+    _thresholdAlgorithm->write(storage);
+    storage << "}";
+
+    storage << NODE_MIN_DIST_BETWEEN_BLOBS << _minDistBetweenBlobs;
+
+    storage << NODE_FILTERS << "{";
+    //TODO: filters
+    for (auto f : _filters)
+        f->write(storage);
+    storage << "}";
+}
