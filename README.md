@@ -6,7 +6,7 @@ An enhanced version of OpenCV's SimpleBlobDetector
 ### Programmatically
 It is very well possible to create an ObjectDetector instance and configure it in your code. 
 
-```
+```cpp
 // Start by creating an ObjectDetector instance. Give it a minimum distance between BLOBs of 10.
 ObjectDetector od(10.0);
 
