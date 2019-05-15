@@ -28,9 +28,7 @@
 #define THRESHOLD_ALGORITHM_RANGE   "Range"
 
 
-/*! /class ThresholdAlgorithm
- *  /brief Abstract threshold algorithm
- *
+/*!
  *  This class serves as the base of all threshold algorithms. You can subclass your own threshold algorithm from this class.
  */
 class ThresholdAlgorithm
@@ -49,8 +47,7 @@ protected:
     void debug(std::vector<cv::Mat>& storage);
 };
 
-/*! /brief Debug the thresholding process.
- *
+/*!
  * This function allows visual inspection of the thresholding process, by showing all the intermediate binary images.
  * @param storage
  */
@@ -71,9 +68,7 @@ void ThresholdAlgorithm::debug(std::vector<cv::Mat>& storage)
         cv::destroyWindow(win);
 }
 
-/*! /class ThresholdFixedAlgorithm
- *  /brief Implementation of the fixed threshold algorithm
- *
+/*!
  *  This class implements the fixed threshold algorithm, which uses one single threshold value.
  */
 class ThresholdFixedAlgorithm: public ThresholdAlgorithm
@@ -102,9 +97,7 @@ private:
     int _threshold;
 };
 
-/*! /class ThresholdRangeAlgorithm
- *  /brief Implementation of the threshold range algorithm
- *
+/*!
  *  This class implements the threshold range algorithm, which uses a range of threshold values, specified by
  *  a minimum and maximum threshold value (both inclusive) and a step size.
  */
@@ -142,9 +135,7 @@ private:
     int _min, _max, _step;
 };
 
-/*! /class ThresholdOtsuAlgorithm
- *  /brief Implementation of Otsu's threshold range algorithm
- *
+/*! \
  *  This class implements Otsu's threshold algorithm.
  */
 class ThresholdOtsuAlgorithm: public ThresholdAlgorithm
