@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
     auto toa = std::make_shared<ThresholdOtsuAlgorithm>();
     auto tfa = std::make_shared<ThresholdFixedAlgorithm>(100);
 
-    // Create an object detector. Set the minimum distance between BLOBs to 10.0;
+    // Create an object detector. Set the minimum distance between objects to 10.0;
     ObjectDetector od(10.0);
 
     // Show the original.

@@ -6,5 +6,5 @@ include_directories(${OpenCV_INCLUDE_DIRS} ${X11_INCLUDE_DIRS})
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(ObjectDetector main.cpp ObjectDetector.hpp ObjectDetector.cpp ThresholdAlgorithm.hpp Filter.hpp)
+add_executable(ObjectDetector demo.cpp ObjectDetector.hpp ThresholdAlgorithm.hpp Filter.hpp)
 target_link_libraries (ObjectDetector ${OpenCV_LIBS} ${X11_LIBRARIES})

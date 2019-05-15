@@ -5,7 +5,7 @@
     <threshold>150</threshold>
   </ThresholdFixedAlgorithm>
 </thresholdAlgorithm>
-<minDistBetweenBlobs>10.</minDistBetweenBlobs>
+<minDistBetweenObjects>10.</minDistBetweenObjects>
 <filters>
   <AreaFilter>
     <min>1000.</min>
