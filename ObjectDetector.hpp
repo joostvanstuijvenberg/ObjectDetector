@@ -1,3 +1,5 @@
+#include <utility>
+
 /* ============================================================================================== */
 /* ObjectDetector.hpp                                                                             */
 /*                                                                                                */
@@ -25,16 +27,17 @@
 /* ---------------------------------------------------------------------------------------------- */
 class ObjectDetector {
 public:
-    explicit ObjectDetector(double minDistBetweenObjects = 0.0);
-    void setThresholdAlgorithm(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorithm) { _thresholdAlgorithm = thresholdAlgorithm; }
-    double getMinDistBetweenObjects() { return _minDistBetweenObjects; }
-    void setMinDistBetweenObjects(double minDistBetweenObjects) { _minDistBetweenObjects = minDistBetweenObjects; }
-    void registerFilter(std::string key, std::shared_ptr<Filter> filter) { _registeredFilters.emplace(key, filter); }
-    void addFilter(std::shared_ptr<Filter> filter) { _filters.emplace_back(filter); }
-    void resetFilters() { _filters.clear(); }
+    inline explicit ObjectDetector(double minDistBetweenObjects = 0.0);
+    inline void setThresholdAlgorithm(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorithm) { _thresholdAlgorithm = std::move(
+                thresholdAlgorithm); }
+    inline double getMinDistBetweenObjects() { return _minDistBetweenObjects; }
+    inline void setMinDistBetweenObjects(double minDistBetweenObjects) { _minDistBetweenObjects = minDistBetweenObjects; }
+    inline void registerFilter(std::string key, std::shared_ptr<Filter> filter) { _registeredFilters.emplace(key, filter); }
+    inline void addFilter(std::shared_ptr<Filter> filter) { _filters.emplace_back(filter); }
+    inline void resetFilters() { _filters.clear(); }
     std::vector<cv::KeyPoint> detect(cv::Mat& image);
-    void read(const cv::FileNode &node);
-    void write(cv::FileStorage &storage) const;
+    inline void read(const cv::FileNode &node);
+    inline void write(cv::FileStorage &storage) const;
 protected:
     std::vector<Center> findObjects(cv::Mat &originalImage, cv::Mat &binaryImage);
 private:
@@ -62,7 +65,7 @@ ObjectDetector::ObjectDetector(double minDistBetweenObjects)
 /* ---------------------------------------------------------------------------------------------- */
 std::vector<cv::KeyPoint> ObjectDetector::detect(cv::Mat& image)
 {
-    assert(image.data != 0);
+    assert(image.data != nullptr);
     assert(_thresholdAlgorithm != nullptr);
 
     // Convert the image to grayscale, when needed.
@@ -127,7 +130,7 @@ std::vector<cv::KeyPoint> ObjectDetector::detect(cv::Mat& image)
 /* ---------------------------------------------------------------------------------------------- */
 std::vector<Center> ObjectDetector::findObjects(cv::Mat &originalImage, cv::Mat &binaryImage)
 {
-    assert(originalImage.data != 0);
+    assert(originalImage.data != nullptr);
 
     std::vector<Center> centers;
 
@@ -148,7 +151,7 @@ std::vector<Center> ObjectDetector::findObjects(cv::Mat &originalImage, cv::Mat 
 
         // Process all filters until the first one that filters out the contour.
         bool filtered = false;
-        for (auto f : _filters)
+        for (const auto &f : _filters)
             if (filtered = f->filter(originalImage, binaryImage, contour, center, m))
                 break;
         if (filtered)
@@ -208,7 +211,7 @@ void ObjectDetector::write(cv::FileStorage &storage) const {
 
     storage << NODE_FILTERS << "{";
     //TODO: filters
-    for (auto f : _filters)
+    for (const auto &f : _filters)
         f->write(storage);
     storage << "}";
 }
