@@ -42,7 +42,7 @@ public:
 /* ---------------------------------------------------------------------------------------------- */
 class AreaFilter : public Filter {
 public:
-    AreaFilter(double min = 0, double max = 0) : _min(min), _max(max) {
+    explicit AreaFilter(double min = 0, double max = 0) : _min(min), _max(max) {
         assert (_min <= _max);
     }
     bool filter(const cv::Mat& grayImage, const cv::Mat& binaryImage, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) override {
@@ -67,7 +67,7 @@ private:
 /* ---------------------------------------------------------------------------------------------- */
 class CircularityFilter : public Filter {
 public:
-    CircularityFilter(double min = 0, double max = 0) : _min(min), _max(max) {
+    explicit CircularityFilter(double min = 0, double max = 0) : _min(min), _max(max) {
         assert (_min <= _max);
     }
     bool filter(const cv::Mat& grayImage, const cv::Mat& binaryImage, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) override {
@@ -95,7 +95,7 @@ private:
 /* ---------------------------------------------------------------------------------------------- */
 class ConvexityFilter : public Filter {
 public:
-    ConvexityFilter(double min = 0, double max = 0) : _min(min), _max(max) {
+    explicit ConvexityFilter(double min = 0, double max = 0) : _min(min), _max(max) {
         assert (_min <= _max);
     }
     bool filter(const cv::Mat& grayImage, const cv::Mat& binaryImage, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) override {
@@ -127,7 +127,7 @@ private:
 /* ---------------------------------------------------------------------------------------------- */
 class InertiaFilter : public Filter {
 public:
-    InertiaFilter(double min = 0, double max = 0) : _min(min), _max(max) {
+    explicit InertiaFilter(double min = 0, double max = 0) : _min(min), _max(max) {
         assert (_min <= _max);
     }
     bool filter(const cv::Mat& grayImage, const cv::Mat& binaryImage, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) override {
@@ -183,8 +183,8 @@ public:
         return grayImage.at<uchar>(cvRound(location.y), cvRound(location.x)) < _min || grayImage.at<uchar>(cvRound(location.y), cvRound(location.x)) > _max;
     }
     void read(const cv::FileNode &node) override {
-        _min = (int)node[NODE_MIN];
-        _max = (int)node[NODE_MAX];
+        _min = (uchar)(int)node[NODE_MIN];
+        _max = (uchar)(int)node[NODE_MAX];
     };
     void write(cv::FileStorage &storage) const override {
         storage << "ColorFilter" << "{";
@@ -201,13 +201,13 @@ private:
 /* ---------------------------------------------------------------------------------------------- */
 class ExtentFilter : public Filter {
 public:
-    ExtentFilter(double min = 0, double max = 0) : _min(min), _max(max) {
+    explicit ExtentFilter(double min = 0, double max = 0) : _min(min), _max(max) {
         assert (_min <= _max);
     }
     bool filter(const cv::Mat& grayImage, const cv::Mat& binaryImage, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) override {
-        double contourArea = moments.m00;
+        auto contourArea = moments.m00;
         auto boundingRect = cv::boundingRect(binaryImage);
-        double extent = moments.m00 / boundingRect.area();
+        auto extent = moments.m00 / boundingRect.area();
         return extent < _min || extent > _max;
     }
     void read(const cv::FileNode &node) override {

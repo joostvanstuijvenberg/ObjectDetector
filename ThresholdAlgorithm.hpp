@@ -9,9 +9,10 @@
 #ifndef OBJECTDETECTOR_THRESHOLDALGORITHM_HPP
 #define OBJECTDETECTOR_THRESHOLDALGORITHM_HPP
 
-#include <vector>
 #include <memory>
 #include <sstream>
+#include <utility>
+#include <vector>
 
 #include "opencv2/opencv.hpp"
 
@@ -35,7 +36,7 @@ class ThresholdAlgorithm
 {
 public:
     explicit ThresholdAlgorithm(int minRepeatability = 1) : _minRepeatability(minRepeatability) {}
-    void setImage(cv::Mat image) { _image = image; }
+    void setImage(cv::Mat image) { _image = std::move(image); }
     int minRepeatability() { return _minRepeatability; }
     virtual std::vector<cv::Mat> binaryImages() = 0;
     virtual void read(const cv::FileNode &node) = 0;
@@ -51,7 +52,7 @@ inline void ThresholdAlgorithm::debug(std::vector<cv::Mat>& storage)
 {
     int w = 0;
     std::vector<std::string> winNames;
-    for (auto i : storage)
+    for (const auto &i : storage)
     {
         std::ostringstream os;
         os << "Debug " << w++;
@@ -60,8 +61,8 @@ inline void ThresholdAlgorithm::debug(std::vector<cv::Mat>& storage)
         cv::imshow(os.str(), i);
     }
     cv::waitKey(0);
-    for (auto w : winNames)
-        cv::destroyWindow(w);
+    for (const auto &win : winNames)
+        cv::destroyWindow(win);
 }
 
 /* ---------------------------------------------------------------------------------------------- */
