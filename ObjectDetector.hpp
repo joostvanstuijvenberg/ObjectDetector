@@ -31,7 +31,7 @@ public:
     inline void setMinDistBetweenObjects(double minDistBetweenObjects) { _minDistBetweenObjects = minDistBetweenObjects; }
     inline void registerFilter(std::string key, std::shared_ptr<Filter> filter) { _registeredFilters.emplace(key, filter); }
     inline void addFilter(std::shared_ptr<Filter> filter) { _filters.emplace_back(filter); }
-    inline void resetFilters() { _filters.clear(); }
+    inline void clearFilters() { _filters.clear(); }
     std::vector<cv::KeyPoint> detect(cv::Mat& image);
     inline void read(const cv::FileNode &node);
     inline void write(cv::FileStorage &storage) const;

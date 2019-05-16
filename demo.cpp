@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
                &keypoints);
 
     // Filtering by both area and inertia.
-    od.resetFilters();
+    od.clearFilters();
     od.addFilter(std::make_shared<AreaFilter>(4000, 15000));
     od.addFilter(std::make_shared<InertiaFilter>(0.05, 0.75));
     keypoints = od.detect(image);
@@ -100,7 +100,7 @@ int main(int argc, char **argv) {
 
     // Now we will show all objects that have a medium gray to white 'color'.
     od.setThresholdAlgorithm(tra);
-    od.resetFilters();
+    od.clearFilters();
     od.addFilter(std::make_shared<AreaFilter>(1000, 50000));
     od.addFilter(std::make_shared<ColorFilter>(140, 160));
     keypoints = od.detect(image);
@@ -109,7 +109,7 @@ int main(int argc, char **argv) {
 
     // Now let's select the least convex object from the image.
     od.setThresholdAlgorithm(toa);
-    od.resetFilters();
+    od.clearFilters();
     od.addFilter(std::make_shared<AreaFilter>(1000, 5000));
     od.addFilter(std::make_shared<ConvexityFilter>(0.0, 0.6));
     keypoints = od.detect(image);
@@ -117,7 +117,7 @@ int main(int argc, char **argv) {
 
     // Start over with an extent filter.
     od.setThresholdAlgorithm(tfa);
-    od.resetFilters();
+    od.clearFilters();
     od.addFilter(std::make_shared<AreaFilter>(5000, 50000));
     od.addFilter(std::make_shared<ExtentFilter>(0.02, 0.04));
     keypoints = od.detect(image);
