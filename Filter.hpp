@@ -46,6 +46,10 @@ public:
     inline bool filter(const cv::Mat& grayImage, const cv::Mat& binaryImage, const std::vector<cv::Point> &contour, Center &center, const cv::Moments &moments) override {
         return moments.m00 < _min || moments.m00 > _max;
     }
+    inline double minArea() const { return _min; }
+    inline void minArea(double min) { _min = min; }
+    inline double maxArea() const { return _max; }
+    inline void maxArea(double max) { _max = max; }
     inline void read(const cv::FileNode &node) override {
         _min = (double)node[NODE_MIN];
         _max = (double)node[NODE_MAX];
@@ -74,6 +78,10 @@ public:
         double ratio = 4 * CV_PI * area / (perimeter * perimeter);
         return ratio < _min || ratio > _max;
     }
+    inline double minCircularity() const { return _min; }
+    inline void minCircularity(double min) { _min = min; }
+    inline double maxCircularity() const { return _max; }
+    inline void maxCircularity(double max) { _max = max; }
     inline void read(const cv::FileNode &node) override {
         _min = (double)node[NODE_MIN];
         _max = (double)node[NODE_MAX];
@@ -106,6 +114,10 @@ public:
         double ratio = area / hullArea;
         return ratio < _min || ratio > _max;
     }
+    inline double minConvexity() const { return _min; }
+    inline void minConvexity(double min) { _min = min; }
+    inline double maxConvexity() const { return _max; }
+    inline void maxConvexity(double max) { _max = max; }
     inline void read(const cv::FileNode &node) override {
         _min = (double)node[NODE_MIN];
         _max = (double)node[NODE_MAX];
@@ -150,6 +162,10 @@ public:
         center.confidence = ratio * ratio;
         return ratio < _min || ratio > _max;
     }
+    inline double minInertia() const { return _min; }
+    inline void minInertia(double min) { _min = min; }
+    inline double maxInertia() const { return _max; }
+    inline void maxInertia(double max) { _max = max; }
     inline void read(const cv::FileNode &node) override {
         _min = (double)node[NODE_MIN];
         _max = (double)node[NODE_MAX];
@@ -180,6 +196,10 @@ public:
         auto location = cv::Point2d(moments.m10 / moments.m00, moments.m01 / moments.m00);
         return grayImage.at<uchar>(cvRound(location.y), cvRound(location.x)) < _min || grayImage.at<uchar>(cvRound(location.y), cvRound(location.x)) > _max;
     }
+    inline uchar minColor() const { return _min; }
+    inline void minColor(uchar min) { _min = min; }
+    inline uchar maxColor() const { return _max; }
+    inline void maxColor(uchar max) { _max = max; }
     inline void read(const cv::FileNode &node) override {
         _min = (uchar)(int)node[NODE_MIN];
         _max = (uchar)(int)node[NODE_MAX];
@@ -208,6 +228,10 @@ public:
         auto extent = moments.m00 / boundingRect.area();
         return extent < _min || extent > _max;
     }
+    inline double minExtent() const { return _min; }
+    inline void minExtent(double min) { _min = min; }
+    inline double maxExtent() const { return _max; }
+    inline void maxExtent(double max) { _max = max; }
     inline void read(const cv::FileNode &node) override {
         _min = (double)node[NODE_MIN];
         _max = (double)node[NODE_MAX];

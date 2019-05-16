@@ -27,6 +27,7 @@ public:
     inline explicit ThresholdAlgorithm(int minRepeatability = 1) : _minRepeatability(minRepeatability) {}
     inline void setImage(cv::Mat image) { _image = std::move(image); }
     inline int minRepeatability() { return _minRepeatability; }
+    inline void minRepeatability(int minRepeatability) { _minRepeatability = minRepeatability; }
     virtual std::vector<cv::Mat> binaryImages() = 0;
     virtual void read(const cv::FileNode &node) = 0;
     virtual void write(cv::FileStorage &storage) const = 0;

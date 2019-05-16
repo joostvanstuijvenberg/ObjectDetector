@@ -1,5 +1,3 @@
-#include <utility>
-
 /* ============================================================================================== */
 /* ObjectDetector.hpp                                                                             */
 /*                                                                                                */
@@ -11,6 +9,7 @@
 #ifndef OBJECTDETECTOR_OBJECTDETECTOR_HPP
 #define OBJECTDETECTOR_OBJECTDETECTOR_HPP
 
+#include <utility>
 #include <vector>
 
 #include "opencv2/opencv.hpp"
@@ -27,8 +26,8 @@ public:
     inline explicit ObjectDetector(double minDistBetweenObjects = 10.0);
     inline void setThresholdAlgorithm(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorithm) { _thresholdAlgorithm = std::move(
                 thresholdAlgorithm); }
-    inline double getMinDistBetweenObjects() { return _minDistBetweenObjects; }
-    inline void setMinDistBetweenObjects(double minDistBetweenObjects) { _minDistBetweenObjects = minDistBetweenObjects; }
+    inline double minDistBetweenObjects() { return _minDistBetweenObjects; }
+    inline void minDistBetweenObjects(double minDistBetweenObjects) { _minDistBetweenObjects = minDistBetweenObjects; }
     inline void registerFilter(const std::string key, const std::shared_ptr<Filter> filter) { _registeredFilters.emplace(key, filter); }
     inline void addFilter(const std::shared_ptr<Filter> filter) { _filters.emplace_back(filter); }
     inline void clearFilters() { _filters.clear(); }
