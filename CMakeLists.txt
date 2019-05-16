@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 project(ObjectDetector)
-find_package(OpenCV 3.4.6 REQUIRED)
+find_package(OpenCV REQUIRED)
 find_package(X11 REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS} ${X11_INCLUDE_DIRS})
 

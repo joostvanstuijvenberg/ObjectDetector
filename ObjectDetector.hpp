@@ -24,7 +24,7 @@
 /* ---------------------------------------------------------------------------------------------- */
 class ObjectDetector {
 public:
-    inline explicit ObjectDetector(double minDistBetweenObjects = 0.0);
+    inline explicit ObjectDetector(double minDistBetweenObjects = 10.0);
     inline void setThresholdAlgorithm(std::shared_ptr<ThresholdAlgorithm> thresholdAlgorithm) { _thresholdAlgorithm = std::move(
                 thresholdAlgorithm); }
     inline double getMinDistBetweenObjects() { return _minDistBetweenObjects; }

@@ -67,8 +67,8 @@ int main(int argc, char **argv) {
     auto toa = std::make_shared<ThresholdOtsuAlgorithm>();
     auto tfa = std::make_shared<ThresholdFixedAlgorithm>(100);
 
-    // Create an object detector. Set the minimum distance between objects to 10.0;
-    ObjectDetector od(10.0);
+    // Create an object detector. The default minimum distance between objects is 10.0;
+    ObjectDetector od;
 
     // Show the original.
     showWindow("Original", image, nullptr);
