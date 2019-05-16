@@ -13,9 +13,7 @@
 
 #include "opencv2/opencv.hpp"
 
-#define NODE_TYPE                   "type"
-#define NODE_MIN                    "min"
-#define NODE_MAX                    "max"
+#include "Persistence.hpp"
 
 /* ---------------------------------------------------------------------------------------------- */
 /* Center data structure                                                                          */

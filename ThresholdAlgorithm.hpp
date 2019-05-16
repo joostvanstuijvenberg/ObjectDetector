@@ -16,17 +16,7 @@
 
 #include "opencv2/opencv.hpp"
 
-#define NODE_THRESHOLD              "threshold"
-#define NODE_TYPE                   "type"
-#define NODE_MIN                    "min"
-#define NODE_MAX                    "max"
-#define NODE_STEP                   "step"
-#define NODE_MIN_REPEATABLILITY     "minRepeatability"
-
-#define THRESHOLD_ALGORITHM_FIXED   "Fixed"
-#define THRESHOLD_ALGORITHM_OTSU    "Otsu"
-#define THRESHOLD_ALGORITHM_RANGE   "Range"
-
+#include "Persistence.hpp"
 
 /*!
  *  This class serves as the base of all threshold algorithms. You can subclass your own threshold algorithm from this class.

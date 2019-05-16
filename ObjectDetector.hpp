@@ -11,15 +11,12 @@
 #ifndef OBJECTDETECTOR_OBJECTDETECTOR_HPP
 #define OBJECTDETECTOR_OBJECTDETECTOR_HPP
 
-#define NODE_THRESHOLD_ALGORITHM        "thresholdAlgorithm"
-#define NODE_MIN_DIST_BETWEEN_OBJECTS   "minDistBetweenObjects"
-#define NODE_FILTERS                    "filters"
-
 #include <vector>
 
 #include "opencv2/opencv.hpp"
 
 #include "Filter.hpp"
+#include "Persistence.hpp"
 #include "ThresholdAlgorithm.hpp"
 
 /* ---------------------------------------------------------------------------------------------- */
