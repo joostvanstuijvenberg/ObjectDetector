@@ -29,14 +29,14 @@ public:
                 thresholdAlgorithm); }
     inline double getMinDistBetweenObjects() { return _minDistBetweenObjects; }
     inline void setMinDistBetweenObjects(double minDistBetweenObjects) { _minDistBetweenObjects = minDistBetweenObjects; }
-    inline void registerFilter(std::string key, std::shared_ptr<Filter> filter) { _registeredFilters.emplace(key, filter); }
-    inline void addFilter(std::shared_ptr<Filter> filter) { _filters.emplace_back(filter); }
+    inline void registerFilter(const std::string key, const std::shared_ptr<Filter> filter) { _registeredFilters.emplace(key, filter); }
+    inline void addFilter(const std::shared_ptr<Filter> filter) { _filters.emplace_back(filter); }
     inline void clearFilters() { _filters.clear(); }
-    std::vector<cv::KeyPoint> detect(cv::Mat& image);
+    std::vector<cv::KeyPoint> detect(const cv::Mat& image);
     inline void read(const cv::FileNode &node);
     inline void write(cv::FileStorage &storage) const;
 protected:
-    std::vector<Center> findObjects(cv::Mat &originalImage, cv::Mat &binaryImage);
+    std::vector<Center> findObjects(const cv::Mat &originalImage, const cv::Mat &binaryImage);
 private:
     std::map<std::string, std::shared_ptr<ThresholdAlgorithm>> _registeredThresholdAlgorithms;
     std::shared_ptr<ThresholdAlgorithm> _thresholdAlgorithm;
@@ -60,7 +60,7 @@ ObjectDetector::ObjectDetector(double minDistBetweenObjects)
 }
 
 /* ---------------------------------------------------------------------------------------------- */
-std::vector<cv::KeyPoint> ObjectDetector::detect(cv::Mat& image)
+std::vector<cv::KeyPoint> ObjectDetector::detect(const cv::Mat& image)
 {
     assert(image.data != nullptr);
     assert(_thresholdAlgorithm != nullptr);
@@ -125,7 +125,7 @@ std::vector<cv::KeyPoint> ObjectDetector::detect(cv::Mat& image)
 }
 
 /* ---------------------------------------------------------------------------------------------- */
-std::vector<Center> ObjectDetector::findObjects(cv::Mat &originalImage, cv::Mat &binaryImage)
+std::vector<Center> ObjectDetector::findObjects(const cv::Mat &originalImage, const cv::Mat &binaryImage)
 {
     assert(originalImage.data != nullptr);
 
