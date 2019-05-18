@@ -131,6 +131,7 @@ int main(int argc, char **argv) {
     cv::FileStorage storage("parameters.xml", cv::FileStorage::READ);
     cv::FileNode node = storage["opencv_storage"];
     ObjectDetector o2;
+    o2.setThresholdAlgorithm(tra);
     o2.read(node);
     keypoints = o2.detect(image);
     showWindow("Using parameters.xml", image, &keypoints);
